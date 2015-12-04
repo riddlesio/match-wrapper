@@ -58,8 +58,12 @@ public class InputStreamGobbler extends Thread {
 
             while (!finished && (lastLine = bufferedReader.readLine()) != null) {
                 if (/*!lastLine.contains("VM warning") && */buffer.length() < 1000000) { //catches bots that return way too much (infinite loop)
-                    if (this.type.equals("output"))
+                    if (this.type.equals("output")) {
                        this.wrapper.response = lastLine;
+                       if (this.wrapper.inputQueue != null) {
+                           this.wrapper.inputQueue.add(lastLine);
+                       }
+                    }
                     buffer.append(lastLine + "\n");
                 }
             }
@@ -68,7 +72,7 @@ public class InputStreamGobbler extends Thread {
             } catch (IOException e) {}
             
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            System.err.println(ex);
         }
     }
     

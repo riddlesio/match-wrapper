@@ -36,8 +36,9 @@ import java.util.regex.Matcher;
  */
 public class EngineAPI {
 
-	private static final Pattern BOTNR_ASK = Pattern.compile("^bot (\\d+) ask (.*)");
+    private static final Pattern BOTNR_ASK = Pattern.compile("^bot (\\d+) ask (.*)");
     private static final Pattern BOTNR_SEND = Pattern.compile("^bot (\\d+) send (.*)");
+    private static final Pattern BOTNR_WARNING = Pattern.compile("^bot (\\d+) warning (.*)");
     private static final Pattern BOTALL_SEND = Pattern.compile("^bot all send (.*)");
 
     private IOEngine engine;
@@ -57,22 +58,28 @@ public class EngineAPI {
      * @return Next engine message
      * @throws IOException
      */
-    public String handle(String message) throws IOException {
+    public void handle(String message) throws IOException {
+        
+        if (message == null || message.length() <= 0 || message.equals("end")) {
+            this.ended = true;
+            return;
+        }
+        
         Matcher m;
         if ((m = BOTNR_ASK.matcher(message)).find()) {
-            return this.engine.ask(botAsk(Integer.parseInt(m.group(1)), m.group(2)));
+            this.engine.send(botAsk(Integer.parseInt(m.group(1)), m.group(2)));
         } else if ((m = BOTNR_SEND.matcher(message)).find()) {
-        	botSend(Integer.parseInt(m.group(1)), m.group(2));
-        	return this.engine.getResponse();
+            botSend(Integer.parseInt(m.group(1)), m.group(2));
+        } else if ((m = BOTNR_WARNING.matcher(message)).find()) {
+            botWarning(Integer.parseInt(m.group(1)), m.group(2));
         } else if ((m = BOTALL_SEND.matcher(message)).find()) {
             botBroadcast(m.group(1));
-            return this.engine.getResponse();
-        } else if (message.equals("end")) {
-            return stop();
+        } else if (message.equals("ok")) {
+            // do nothing, continue
+        } else {
+            System.err.println("No match");
+            this.ended = true;
         }
-
-        System.err.println("No match");
-        return stop();
     }
 
     /**
@@ -80,36 +87,55 @@ public class EngineAPI {
      * @return The details of the game
      */
     public String run() throws IOException {
-        String response;
 
         // Have engine set up game settings
         if (!askAndExpect("initialize", "ok")) {
             return "initialize failed";
         }
-        System.out.println("Engine initialized. Sending settings..");
+        System.out.println("Engine initialized. Sending settings to engine..");
         this.engine.sendPlayers(bots);
         
-        System.out.println("Settings sent to engine. Starting engine...");
-        response = this.engine.ask("start");
+        System.out.println("Settings sent to engine. Sending settings to bots...");
+        this.sendBotSettings();
+        
+        System.out.println("Settings sent to bots. Starting engine...");
+        this.engine.send("start");
+        
+        System.out.println("Engine Started. Playing game...");
 
         while (!this.ended) {
-            response = handle(response);
+            handle(this.engine.getMessage());
         }
-
-        return response;
+        
+//        System.out.println("AAAAAAAAABBBB " + this.engine.getMessage());
+        System.out.println(this.engine.ask("details"));
+        System.out.println(this.engine.ask("game"));
+//        System.out.println(this.engine.ask("bla"));
+        
+        return "";
     }
-
+    
     /**
-     * Stops running of API and asks engine for
-     * game details
-     * @return The final engine message
-     * @throws IOException
+     * Sends settings to all bots that are required for
+     * every game
      */
-    public String stop() throws IOException {
-        this.ended = true;
-
-        // ask for the game details
-        return this.engine.ask("details");
+    private void sendBotSettings() {
+        
+        // create player names string
+        String playerNames = "";
+        String connector = "";
+        for (IOPlayer bot : this.bots) {
+            playerNames += String.format("%splayer%d", connector, bot.getId());
+            connector = ",";
+        }
+        
+        // send settings
+        botBroadcast(String.format("settings player_names %s", playerNames));
+        for (IOPlayer bot : this.bots) {
+            bot.send(String.format("settings your_bot player%d", bot.getId()));
+            bot.send(String.format("settings timebank %d", bot.getTimebankMax()));
+            bot.send(String.format("settings time_per_move %d", bot.getTimePerMove()));
+        }
     }
 
     /**
@@ -133,8 +159,18 @@ public class EngineAPI {
      * @throws IOException
      */
     private void botSend(int botIndex, String message) throws IOException {
-    	IOPlayer bot = bots.get(botIndex);
-    	bot.send(message);
+        IOPlayer bot = bots.get(botIndex);
+        bot.send(message);
+    }
+    
+    /**
+     * Adds a warning from the engine to the bot's dump
+     * @param botIndex Bot for which the warning is meant
+     * @param warning Warning message
+     */
+    private void botWarning(int botIndex, String warning) {
+        IOPlayer bot = bots.get(botIndex);
+        bot.addToDump(warning);
     }
 
     /**
@@ -143,8 +179,8 @@ public class EngineAPI {
      * @return False if message send failed, true otherwise
      */
     private void botBroadcast(String message) {
-        for(IOPlayer bot : bots)
-        	bot.send(message);
+        for (IOPlayer bot : bots)
+            bot.send(message);
     }
 
     /**

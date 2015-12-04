@@ -19,6 +19,7 @@ package io.riddles.gamewrapper.io;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * IOEngine class
@@ -29,11 +30,12 @@ import java.util.ArrayList;
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@starapple.nl>
  */
 public class IOEngine extends IOWrapper {
-	
-	private final long TIMEOUT = 2000; // 2 seconds
+    
+    private final long TIMEOUT = 2000; // 2 seconds
 
     public IOEngine(Process process) {
         super(process);
+        this.inputQueue = new LinkedList<String>();
     }
 
     /**
@@ -42,7 +44,7 @@ public class IOEngine extends IOWrapper {
      * @return True if write was successful, false otherwise
      */
     public boolean send(String message) throws IOException {
-    	return write(message);
+        return write(message);
     }
     
     /**
@@ -61,15 +63,43 @@ public class IOEngine extends IOWrapper {
      * @return Engine's response, returns and empty string when there is no response
      */
     public String getResponse() {
-    	return super.getResponse(this.TIMEOUT);
+        return super.getResponse(this.TIMEOUT);
+    }
+    
+    /**
+     * Waits until the engine returns one or multiple messages
+     * and returns the first given, returns empty string if there
+     * is a timeout
+     * @return Message from the engine, empty string if timeout
+     */
+    public String getMessage() {
+        long timeStart = System.currentTimeMillis();
+        String message = this.inputQueue.poll();
+        
+        while (message == null) {
+            long timeNow = System.currentTimeMillis();
+            long timeElapsed = timeNow - timeStart;
+            
+            if (timeElapsed >= this.TIMEOUT) {
+                return handleResponseTimeout(this.TIMEOUT);
+            }
+            
+            try { 
+                Thread.sleep(2);
+            } catch (InterruptedException e) {}
+            
+            message = this.inputQueue.poll();
+        }
+        
+        return message;
     }
     
     /**
      * Shuts down the engine
      */
     public void finish() {
-    	super.finish();
-    	System.out.println("Engine shut down.");
+        super.finish();
+        System.out.println("Engine shut down.");
     }
     
     /**
@@ -79,8 +109,7 @@ public class IOEngine extends IOWrapper {
      */
     protected String handleResponseTimeout(long timeout) {
 
-        // retry message again with longer timeout?
-        System.err.println("Engine took too long!");
+        System.err.println(String.format("Engine took too long! (%dms)", this.TIMEOUT));
         return "";
     }
     
@@ -90,14 +119,14 @@ public class IOEngine extends IOWrapper {
      * @return False if write failed, true otherwise
      */
     public boolean sendPlayers(ArrayList<IOPlayer> bots) {
-    	StringBuilder message = new StringBuilder();
-    	message.append("bot_ids ");
-    	String connector = "";
-    	for(int i=0; i < bots.size(); i++) {
-    		message.append(String.format("%s%d", connector, i));
-    		connector = ",";
-    	}
-    	return write(message.toString());
+        StringBuilder message = new StringBuilder();
+        message.append("bot_ids ");
+        String connector = "";
+        for (int i=0; i < bots.size(); i++) {
+            message.append(String.format("%s%d", connector, i));
+            connector = ",";
+        }
+        return write(message.toString());
     }
 }
 

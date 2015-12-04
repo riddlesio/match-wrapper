@@ -52,15 +52,15 @@ public class GameWrapper {
      * @param timePerMove Time added to the timebank each move
      */
     private void parseSettings(String timebankMax, String timePerMove, String maxTimeouts) {
-    	long tbm = Long.parseLong(timebankMax);
-    	long tpm = Long.parseLong(timePerMove);
-    	int mto = Integer.parseInt(maxTimeouts);
-    	if (tbm > 0)
-    		this.timebankMax = tbm;
-    	if (tpm > 0)
-    		this.timePerMove = tpm;
-    	if (mto >= 0)
-    		this.maxTimeouts = mto;
+        long tbm = Long.parseLong(timebankMax);
+        long tpm = Long.parseLong(timePerMove);
+        int mto = Integer.parseInt(maxTimeouts);
+        if (tbm > 0)
+            this.timebankMax = tbm;
+        if (tpm > 0)
+            this.timePerMove = tpm;
+        if (mto >= 0)
+            this.maxTimeouts = mto;
     }
 
     /**
@@ -70,8 +70,9 @@ public class GameWrapper {
      * @throws IOException
      */
     private void addPlayer(String command) throws IOException {
-        IOPlayer player = new IOPlayer(wrapCommand(command), this.timebankMax, 
-        		this.timePerMove, this.maxTimeouts);
+        int id = this.players.size();
+        IOPlayer player = new IOPlayer(wrapCommand(command), id, this.timebankMax, 
+                this.timePerMove, this.maxTimeouts);
         this.players.add(player);
         player.run();
     }
@@ -102,24 +103,25 @@ public class GameWrapper {
      */
     private void start() {
         
+        System.out.println("Starting...");
+        
         EngineAPI api = new EngineAPI(this.engine, this.players);
-        String details;
 
         try {
-            details = api.run();
+            api.run();
         } catch (IOException ioex) {
             ioex.printStackTrace();
             return;
         }
 
-        System.out.println("stopping...");
-        System.out.println("Details: " + details);
+        System.out.println("Stopping...");
+//        System.out.println("Details: " + details);
         this.stop();
     }
 
     private void printGame() {
         System.out.println("Bot data:");
-        for(IOPlayer bot : this.players) {
+        for (IOPlayer bot : this.players) {
             System.out.println(bot.getDump());
             System.out.println(bot.getStdout());
             System.out.println(bot.getStderr());
@@ -135,9 +137,12 @@ public class GameWrapper {
     private void stop() {
 
         // testing
-        this.printGame();
+//        this.printGame();
+        
+//        System.out.println(this.engine.getStdout());
+        System.out.println(this.engine.getStderr());
 
-        for(IOPlayer bot : this.players) {
+        for (IOPlayer bot : this.players) {
             bot.finish();
         }
         this.engine.finish();

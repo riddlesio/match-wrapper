@@ -29,23 +29,25 @@ import java.io.IOException;
  */
 public class IOPlayer extends IOWrapper {
 
-    private StringBuilder dump;
-    private int errorCounter;
+    private int id;
     private long timebank;
     private long timebankMax;
     private long timePerMove;
     private int maxTimeouts;
+    private StringBuilder dump;
+    private int errorCounter;
     
     private final String NULL_MOVE = "no_moves";
 
-    public IOPlayer(Process process, long timebankMax, long timePerMove, int maxTimeouts) {
+    public IOPlayer(Process process, int id, long timebankMax, long timePerMove, int maxTimeouts) {
         super(process);
-        this.dump = new StringBuilder();
-        this.errorCounter = 0;
+        this.id = id;
         this.timebank = timebankMax;
         this.timebankMax = timebankMax;
         this.timePerMove = timePerMove;
         this.maxTimeouts = maxTimeouts;
+        this.dump = new StringBuilder();
+        this.errorCounter = 0;
     }
  
     /**
@@ -56,7 +58,7 @@ public class IOPlayer extends IOWrapper {
     public void send(String line) {
         addToDump(line);
         if (!super.write(line) && !this.finished) {
-        	addToDump("Write to bot failed, shutting down...");
+            addToDump("Write to bot failed, shutting down...");
         }
     }
     
@@ -68,8 +70,8 @@ public class IOPlayer extends IOWrapper {
      * @throws IOException
      */
     public String ask(String line) throws IOException {
-    	send(String.format("%s %d", line, this.timebank));
-    	return getResponse();
+        send(String.format("%s %d", line, this.timebank));
+        return getResponse();
     }
 
     /**
@@ -90,17 +92,17 @@ public class IOPlayer extends IOWrapper {
         long timeElapsed = System.currentTimeMillis() - startTime;
         updateTimeBank(timeElapsed);
 
-        if(response.equalsIgnoreCase(this.NULL_MOVE)) {
+        if (response.equalsIgnoreCase(this.NULL_MOVE)) {
             botDump(this.NULL_MOVE);
             return "";
         }
-        if(response.isEmpty()) {
-        	botDump("null");
-        	return "";
+        if (response.isEmpty()) {
+            botDump("null");
+            return "";
         }
 
         botDump(response);
-        return response;
+        return String.format("bot %d %s", this.id, response);
     }
 
     /**
@@ -111,7 +113,7 @@ public class IOPlayer extends IOWrapper {
      */
     protected String handleResponseTimeout(long timeout) {
         addToDump(String.format("Response timed out (%dms), let your bot return '%s'"
-        	+ " instead of nothing or make it faster.", timeout, this.NULL_MOVE));
+            + " instead of nothing or make it faster.", timeout, this.NULL_MOVE));
         addError();
         return "";
     }
@@ -122,7 +124,7 @@ public class IOPlayer extends IOWrapper {
      * response
      */
     private void addError() {
-    	this.errorCounter++;
+        this.errorCounter++;
         if (this.errorCounter > this.maxTimeouts) {
             finish();
         }
@@ -132,19 +134,19 @@ public class IOPlayer extends IOWrapper {
      * Shuts down the bot
      */
     public void finish() {
-    	super.finish();
-    	System.out.println("Bot shut down.");
+        super.finish();
+        System.out.println("Bot shut down.");
     }
     
     /**
-	 * Updates the time bank for this player, cannot get bigger 
-	 * than timebankMax or smaller than zero
-	 * @param timeElapsed Time consumed from the time bank
-	 */
-	private void updateTimeBank(long timeElapsed) {
-		this.timebank = Math.max(this.timebank - timeElapsed, 0);
-		this.timebank = Math.min(this.timebank + this.timePerMove, this.timebankMax);
-	}
+     * Updates the time bank for this player, cannot get bigger 
+     * than timebankMax or smaller than zero
+     * @param timeElapsed Time consumed from the time bank
+     */
+    private void updateTimeBank(long timeElapsed) {
+        this.timebank = Math.max(this.timebank - timeElapsed, 0);
+        this.timebank = Math.min(this.timebank + this.timePerMove, this.timebankMax);
+    }
 
     /**
      * Adds the bot's outputs to dump
@@ -171,10 +173,23 @@ public class IOPlayer extends IOWrapper {
     }
     
     /**
-     * Add a warning to the bot's dump that the engine outputs
-     * @param warning The warning message
+     * @return This bot's ID
      */
-    public void outputEngineWarning(String warning) {
-        dump.append(String.format("Engine warning: \"%s\"\n", warning));
+    public int getId() {
+        return this.id;
+    }
+    
+    /**
+     * @return This bot's max timebank setting
+     */
+    public long getTimebankMax() {
+        return this.timebankMax;
+    }
+    
+    /**
+     * @return This bot's time per move setting
+     */
+    public long getTimePerMove() {
+        return this.timePerMove;
     }
 }
