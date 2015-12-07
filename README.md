@@ -16,3 +16,6 @@ Arguments:
 
 ## Test
 Run run_wrapper.sh to test Game Wrapper with provided test bot and test engine.
+
+## TODO
+specify API for Game Wrapper - Engine communication
