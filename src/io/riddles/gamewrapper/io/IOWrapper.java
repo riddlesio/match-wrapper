@@ -103,10 +103,14 @@ public class IOWrapper implements Runnable {
                 Thread.sleep(2);
             } catch (InterruptedException e) {}
         }
+        
+        if (this.inputQueue != null) {
+            this.inputQueue.remove(this.response);
+        }
 
         response = this.response;
         this.response = null;
-
+        
         return response;
     }
 

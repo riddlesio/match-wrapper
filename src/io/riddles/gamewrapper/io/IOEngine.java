@@ -90,6 +90,8 @@ public class IOEngine extends IOWrapper {
             
             message = this.inputQueue.poll();
         }
+
+        this.response = null;
         
         return message;
     }

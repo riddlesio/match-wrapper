@@ -113,10 +113,12 @@ public class GameWrapper {
             ioex.printStackTrace();
             return;
         }
+        
+        System.out.println("Saving game...");
+        saveGame(api.askGameDetails(), api.askPlayedGame());
 
         System.out.println("Stopping...");
-//        System.out.println("Details: " + details);
-        this.stop();
+        stop();
     }
 
     private void printGame() {
@@ -130,6 +132,15 @@ public class GameWrapper {
         System.out.println(this.engine.getStdout());
         System.out.println(this.engine.getStderr());
     }
+    
+    private void saveGame(String details, String playedGame) {
+        
+        System.out.println(details);
+//        System.out.println(playedGame);
+        
+        // SEND GAME RESULT TO ANOTHER PYTHON
+        // WRAPPER THAT INITIATED THE MATCH
+    }
 
     /**
      * Stops the game and all processes
@@ -138,24 +149,13 @@ public class GameWrapper {
 
         // testing
 //        this.printGame();
-        
-//        System.out.println(this.engine.getStdout());
+
         System.out.println(this.engine.getStderr());
 
         for (IOPlayer bot : this.players) {
             bot.finish();
         }
         this.engine.finish();
-        
-        // SEND GAME RESULT TO ANOTHER PYTHON
-        // WRAPPER THAT INITIATED THE MATCH
-
-//        try {
-//            Thread.sleep(100);
-//            this.saveGame();
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
         
         System.out.println("Done.");
         System.exit(0);

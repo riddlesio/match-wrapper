@@ -86,12 +86,13 @@ public class EngineAPI {
      * Run a whole game
      * @return The details of the game
      */
-    public String run() throws IOException {
+    public void run() throws IOException {
 
         // Have engine set up game settings
         if (!askAndExpect("initialize", "ok")) {
-            return "initialize failed";
+            return;
         }
+        
         System.out.println("Engine initialized. Sending settings to engine..");
         this.engine.sendPlayers(bots);
         
@@ -106,13 +107,6 @@ public class EngineAPI {
         while (!this.ended) {
             handle(this.engine.getMessage());
         }
-        
-//        System.out.println("AAAAAAAAABBBB " + this.engine.getMessage());
-        System.out.println(this.engine.ask("details"));
-        System.out.println(this.engine.ask("game"));
-//        System.out.println(this.engine.ask("bla"));
-        
-        return "";
     }
     
     /**
@@ -137,7 +131,37 @@ public class EngineAPI {
             bot.send(String.format("settings time_per_move %d", bot.getTimePerMove()));
         }
     }
-
+    
+    /**
+     * Asks the engine for the details of the game
+     * i.e. winner, etc.
+     * @return Detail string
+     */
+    public String askGameDetails() {
+        try {
+            return this.engine.ask("details");
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+        
+        return "";
+    }
+    
+    /**
+     * Asks the engine for the game file for the
+     * visualizer
+     * @return The played game in string representation
+     */
+    public String askPlayedGame() {
+        try {
+            return this.engine.ask("game");
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+        
+        return "";
+    }
+    
     /**
      * Blocking method
      * Asks something from given bot and waits for reponse.
