@@ -143,7 +143,14 @@ public class GameWrapper {
 
         for (IOPlayer player : this.players) {
 
-            players.put(player.getDump());
+            String log    = player.getDump();
+            String errors = player.getStderr();
+
+            JSONObject playerOutput = new JSONObject();
+            playerOutput.put("log", log);
+            playerOutput.put("errors", errors);
+
+            players.put(playerOutput);
         }
 
         output.put("details", details);
