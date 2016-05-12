@@ -18,11 +18,14 @@
 
 package io.riddles.gamewrapper;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import io.riddles.gamewrapper.io.IOEngine;
 import io.riddles.gamewrapper.io.IOPlayer;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * GameWrapper class
@@ -134,12 +137,32 @@ public class GameWrapper {
     }
     
     private void saveGame(String details, String playedGame) {
-        
-        System.out.println(details);
-//        System.out.println(playedGame);
-        
-        // SEND GAME RESULT TO ANOTHER PYTHON
-        // WRAPPER THAT INITIATED THE MATCH
+
+        JSONObject output = new JSONObject();
+        JSONArray players = new JSONArray();
+
+        for (IOPlayer player : this.players) {
+
+            players.put(player.getDump());
+        }
+
+        output.put("details", details);
+        output.put("game", playedGame);
+        output.put("players", players);
+
+        try {
+            System.out.println("Writing to result.json");
+
+            FileWriter writer = new FileWriter("result.json");
+            writer.write(output.toString());
+            writer.close();
+
+            System.out.println("Finished writing to result.json");
+
+        } catch (IOException e) {
+            System.err.println("Failed to write to result.json");
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
