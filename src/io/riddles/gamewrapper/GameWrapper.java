@@ -18,11 +18,16 @@
 
 package io.riddles.gamewrapper;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import io.riddles.gamewrapper.io.IOEngine;
 import io.riddles.gamewrapper.io.IOPlayer;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * GameWrapper class
@@ -40,7 +45,8 @@ public class GameWrapper {
     private long timebankMax = 10000l; // 10 seconds default
     private long timePerMove = 500l; // 0,5 seconds default
     private int maxTimeouts = 2; // 2 timeouts default before shutdown
-    
+    private String resultFilePath;
+
     public GameWrapper() {
         this.engine = null;
         this.players = new ArrayList<IOPlayer>();
@@ -51,7 +57,7 @@ public class GameWrapper {
      * @param timebankMax Maximum time and starting time in timebank
      * @param timePerMove Time added to the timebank each move
      */
-    private void parseSettings(String timebankMax, String timePerMove, String maxTimeouts) {
+    private void parseSettings(String timebankMax, String timePerMove, String maxTimeouts, String resultFilePath) {
         long tbm = Long.parseLong(timebankMax);
         long tpm = Long.parseLong(timePerMove);
         int mto = Integer.parseInt(maxTimeouts);
@@ -61,6 +67,8 @@ public class GameWrapper {
             this.timePerMove = tpm;
         if (mto >= 0)
             this.maxTimeouts = mto;
+
+        this.resultFilePath = resultFilePath;
     }
 
     /**
@@ -134,12 +142,39 @@ public class GameWrapper {
     }
     
     private void saveGame(String details, String playedGame) {
-        
-        System.out.println(details);
-//        System.out.println(playedGame);
-        
-        // SEND GAME RESULT TO ANOTHER PYTHON
-        // WRAPPER THAT INITIATED THE MATCH
+
+        JSONObject output = new JSONObject();
+        JSONArray players = new JSONArray();
+
+        for (IOPlayer player : this.players) {
+
+            String log    = player.getDump();
+            String errors = player.getStderr();
+
+            JSONObject playerOutput = new JSONObject();
+            playerOutput.put("log", log);
+            playerOutput.put("errors", errors);
+
+            players.put(playerOutput);
+        }
+
+        output.put("details", details);
+        output.put("game", playedGame);
+        output.put("players", players);
+
+        try {
+            System.out.println("Writing to result.json");
+
+            FileWriter writer = new FileWriter(resultFilePath);
+            writer.write(output.toString());
+            writer.close();
+
+            System.out.println("Finished writing to result.json");
+
+        } catch (IOException e) {
+            System.err.println("Failed to write to result.json");
+            System.err.println(e.getMessage());
+        }
     }
 
     /**
@@ -168,21 +203,21 @@ public class GameWrapper {
         GameWrapper game = new GameWrapper();
         
         try {
-            game.parseSettings(args[0], args[1], args[2]);
+            game.parseSettings(args[0], args[1], args[2], args[3]);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Correct arguments not provided, failed to parse settings.");
         }
 
         try {
-            game.setEngine(args[3]);
+            game.setEngine(args[4]);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to start engine.");
         }
 
         try {
-            for (int i = 4; i < args.length; i++) {
+            for (int i = 5; i < args.length; i++) {
                 game.addPlayer(args[i]);
             }
         } catch (Exception e) {
