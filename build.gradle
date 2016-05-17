@@ -1,0 +1,40 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+// Include dependent libraries in archive.
+mainClassName = "io.riddles.gamewrapper.GameWrapper"
+
+sourceCompatibility = 1.8
+version = '1.0.0'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+
+        resources {
+            srcDir 'resources'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Riddles.io Game Wrapper',
+                'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.json', name: 'json', version: '20160212'
+}
