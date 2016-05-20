@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 // Include dependent libraries in archive.
-mainClassName = "io.riddles.gamewrapper.GameWrapper"
+mainClassName = 'io.riddles.gamewrapper.GameWrapper'
 
 sourceCompatibility = 1.8
 version = '1.0.0'
@@ -10,11 +10,11 @@ version = '1.0.0'
 sourceSets {
     main {
         java {
-            srcDir 'src'
+            srcDir 'src/java'
         }
 
         resources {
-            srcDir 'resources'
+            srcDir 'src/resources'
         }
     }
 }
