@@ -95,6 +95,7 @@ public class EngineAPI {
         
         System.out.println("Engine initialized. Sending settings to engine..");
         this.engine.sendPlayers(bots);
+
         
         System.out.println("Settings sent to engine. Sending settings to bots...");
         this.sendBotSettings();
