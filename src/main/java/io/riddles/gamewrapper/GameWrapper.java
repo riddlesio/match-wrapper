@@ -159,29 +159,6 @@ public class GameWrapper {
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse settings.");
         }
-
-//        try {
-//            game.parseSettings(args[0], args[1], args[2], args[3]);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new RuntimeException("Correct arguments not provided, failed to parse settings.");
-//        }
-//
-//        try {
-//            game.setEngine(args[4]);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new RuntimeException("Failed to start engine.");
-//        }
-//
-//        try {
-//            for (int i = 5; i < args.length; i++) {
-//                game.addPlayer(args[i]);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new RuntimeException("Failed to start bot.");
-//        }
         
         try {
             game.start();

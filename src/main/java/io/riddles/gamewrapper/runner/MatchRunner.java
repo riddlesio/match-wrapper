@@ -1,5 +1,6 @@
 package io.riddles.gamewrapper.runner;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import io.riddles.gamewrapper.EngineAPI;
 import io.riddles.gamewrapper.io.IOEngine;
 import io.riddles.gamewrapper.io.IOPlayer;
@@ -27,10 +28,45 @@ public class MatchRunner extends AbstractRunner implements Runnable {
         players = new ArrayList<>();
     }
 
+    /**
+     * Config looks as follows:
+     * {
+     *     engine: {
+     *         command: String,
+     *         settings: {
+     *
+     *         }
+     *     },
+     *     bots: [
+     *         {
+     *             command: String
+     *         }
+     *     ]
+     * }
+     * @param config
+     */
     @Override
     public void prepare(JSONObject config) {
 
+        if (!config.has("engine")) {
+            throw new RuntimeException("No configuration present for engine");
+        }
 
+        JSONObject engineConfig = config.getJSONObject("engine");
+        prepareEngine(engineConfig);
+
+        if (!config.has("bots")) {
+            throw new RuntimeException("No bots found in configuration");
+        }
+
+        JSONArray bots = config.getJSONArray("bots");
+
+        try {
+            bots.forEach(botConfig -> this.prepareBot((JSONObject) botConfig));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to start bot.");
+        }
     }
 
     @Override
@@ -85,14 +121,46 @@ public class MatchRunner extends AbstractRunner implements Runnable {
     private void printGame() {
 
         System.out.println("Bot data:");
-        for (IOPlayer bot : this.players) {
+        for (IOPlayer bot : players) {
             System.out.println(bot.getDump());
             System.out.println(bot.getStdout());
             System.out.println(bot.getStderr());
         }
         System.out.println("Engine data:");
-        System.out.println(this.engine.getStdout());
-        System.out.println(this.engine.getStderr());
+        System.out.println(engine.getStdout());
+        System.out.println(engine.getStderr());
+    }
+
+    private void prepareBot(JSONObject config) {
+
+        if (!config.has("command")) {
+            throw new RuntimeException("No command specified for engine");
+        }
+
+        String command = config.getString("command");
+
+        try {
+            addPlayer(command);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to start engine.");
+        }
+    }
+
+    private void prepareEngine(JSONObject config) {
+
+        if (!config.has("command")) {
+            throw new RuntimeException("No command specified for engine");
+        }
+
+        String command = config.getString("command");
+
+        try {
+            setEngine(command);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to start engine.");
+        }
     }
 
     /**
@@ -102,8 +170,8 @@ public class MatchRunner extends AbstractRunner implements Runnable {
      * @throws IOException
      */
     private void addPlayer(String command) throws IOException {
-        int id = this.players.size();
-        this.players.add(createPlayer(command, id));
+        int id = players.size();
+        players.add(createPlayer(command, id));
     }
 
 
@@ -114,6 +182,6 @@ public class MatchRunner extends AbstractRunner implements Runnable {
      * @throws IOException
      */
     private void setEngine(String command) throws IOException {
-        this.engine = createEngine(command);
+        engine = createEngine(command);
     }
 }
