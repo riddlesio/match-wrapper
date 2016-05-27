@@ -161,6 +161,8 @@ public class MatchRunner extends AbstractRunner implements Runnable {
             e.printStackTrace();
             throw new RuntimeException("Failed to start engine.");
         }
+
+        // TODO: send settings to engine
     }
 
     /**
