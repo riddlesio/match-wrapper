@@ -13,12 +13,11 @@ import java.util.ArrayList;
 /**
  * Created by niko on 26/05/16.
  */
-public class MatchRunner extends AbstractRunner implements Runnable {
+public class MatchRunner extends AbstractRunner implements Runnable, Reportable {
 
     private EngineAPI api;
     private IOEngine engine;
     private ArrayList<IOPlayer> players; // ArrayList containing player handlers
-    private JSONObject resultSet;
 
     public MatchRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
 
@@ -77,7 +76,7 @@ public class MatchRunner extends AbstractRunner implements Runnable {
 
     @Override
     public void postrun() {
-        resultSet = createResultSet();
+        setResults(createResults());
 
         players.forEach(IOPlayer::finish);
 
@@ -85,13 +84,9 @@ public class MatchRunner extends AbstractRunner implements Runnable {
         engine.finish();
     }
 
-    @Override
-    public JSONObject getResultSet() {
 
-        return resultSet;
-    }
 
-    private JSONObject createResultSet() {
+    private JSONObject createResults() {
 
         JSONObject output = new JSONObject();
         JSONArray players = new JSONArray();

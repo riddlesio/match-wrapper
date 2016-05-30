@@ -12,5 +12,4 @@ public interface Runnable {
     void prepare(JSONObject config) throws IOException;
     void run() throws IOException;
     void postrun();
-    JSONObject getResultSet();
 }

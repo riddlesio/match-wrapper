@@ -18,20 +18,10 @@
 
 package io.riddles.gamewrapper;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-
-import io.riddles.gamewrapper.io.IOEngine;
-import io.riddles.gamewrapper.io.IOPlayer;
-import io.riddles.gamewrapper.io.IOWrapper;
-import io.riddles.gamewrapper.runner.MatchRunner;
+import io.riddles.gamewrapper.runner.*;
 import io.riddles.gamewrapper.runner.Runnable;
-import io.riddles.gamewrapper.runner.ScenarioRunner;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -43,7 +33,7 @@ import org.json.JSONObject;
  * 
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
-public class GameWrapper {
+public class GameWrapper implements Runnable {
 
     private long timebankMax = 10000L; // 10 seconds default
     private long timePerMove = 500L; // 0,5 seconds default
@@ -74,7 +64,8 @@ public class GameWrapper {
          resultFilePath = wrapperConfig.getString("resultFilePath");
     }
 
-    private void prepare(JSONObject config) throws IOException {
+    @Override
+    public void prepare(JSONObject config) throws IOException {
 
         JSONObject runnerConfig;
         parseSettings(config);
@@ -96,35 +87,16 @@ public class GameWrapper {
         throw new RuntimeException("Config does not contain either match or scenario");
     }
 
-    private void run() throws IOException {
+    @Override
+    public void run() throws IOException {
         runner.run();
     }
 
-    /**
-     * Starts the game
-     */
-    private void start() {
-        
-        System.out.println("Starting...");
-
-        try {
-            run();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-            return;
-        }
-
-        postrun();
-
-        System.out.println("Stopping...");
-        System.out.println("Done.");
-        System.exit(0);
-    }
-
-    private void postrun() {
+    @Override
+    public void postrun() {
 
         runner.postrun();
-        JSONObject resultSet = runner.getResultSet();
+        JSONObject resultSet = ((Reportable) runner).getResults();
 
         System.out.println("Saving game...");
         saveGame(resultSet);
@@ -149,7 +121,6 @@ public class GameWrapper {
 
     public static void main(String[] args) {
 
-//         for (String arg : args) System.out.println(arg);
         JSONObject config;
         GameWrapper game = new GameWrapper();
 
@@ -157,14 +128,23 @@ public class GameWrapper {
             config = new JSONObject(args[0]);
             game.prepare(config);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to parse settings.");
         }
         
         try {
-            game.start();
+            System.out.println("Starting...");
+            game.run();
+
+            System.out.println("Stopping...");
+            game.postrun();
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error while running game.");
         }
+
+        System.out.println("Done.");
+        System.exit(0);
     }
 }
