@@ -168,7 +168,7 @@ public class EngineAPI {
 
     /**
      * Blocking method
-     * Asks something from given bot and waits for reponse.
+     * Asks something from given bot and waits for response.
      *
      * @param botIndex Bot to ask
      * @param message  Message to send
