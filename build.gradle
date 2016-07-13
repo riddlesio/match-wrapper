@@ -10,11 +10,11 @@ version = '1.0.0'
 sourceSets {
     main {
         java {
-            srcDir 'src/java'
+            srcDir 'src/main/java'
         }
 
         resources {
-            srcDir 'src/resources'
+            srcDir 'src/main/resources'
         }
     }
 }
@@ -37,4 +37,8 @@ repositories {
 
 dependencies {
     compile group: 'org.json', name: 'json', version: '20160212'
+}
+
+test {
+    useTestNG()
 }

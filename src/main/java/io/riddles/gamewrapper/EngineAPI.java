@@ -17,21 +17,20 @@
 
 package io.riddles.gamewrapper;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-
 import io.riddles.gamewrapper.io.IOEngine;
 import io.riddles.gamewrapper.io.IOPlayer;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * EngineAPI class
- * 
+ * <p>
  * Handles all communication between the game wrapper and
  * the engine and bot processes
- * 
+ *
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
 public class EngineAPI {
@@ -54,17 +53,18 @@ public class EngineAPI {
     /**
      * Handles the engine's input. Always returns the next
      * message the engine sends.
+     *
      * @param message Input from the engine
      * @return Next engine message
      * @throws IOException
      */
     public void handle(String message) throws IOException {
-        
+
         if (message == null || message.length() <= 0 || message.equals("end")) {
             this.ended = true;
             return;
         }
-        
+
         Matcher m;
         if ((m = BOTNR_ASK.matcher(message)).find()) {
             this.engine.send(botAsk(Integer.parseInt(m.group(1)), m.group(2)));
@@ -84,6 +84,7 @@ public class EngineAPI {
 
     /**
      * Run a whole game
+     *
      * @return The details of the game
      */
     public void run() throws IOException {
@@ -92,29 +93,30 @@ public class EngineAPI {
         if (!askAndExpect("initialize", "ok")) {
             return;
         }
-        
+
         System.out.println("Engine initialized. Sending settings to engine..");
         this.engine.sendPlayers(bots);
-        
+
+
         System.out.println("Settings sent to engine. Sending settings to bots...");
         this.sendBotSettings();
-        
+
         System.out.println("Settings sent to bots. Starting engine...");
         this.engine.send("start");
-        
+
         System.out.println("Engine Started. Playing game...");
 
         while (!this.ended) {
             handle(this.engine.getMessage());
         }
     }
-    
+
     /**
      * Sends settings to all bots that are required for
      * every game
      */
     private void sendBotSettings() {
-        
+
         // create player names string
         String playerNames = "";
         String connector = "";
@@ -122,7 +124,7 @@ public class EngineAPI {
             playerNames += String.format("%splayer%d", connector, bot.getId());
             connector = ",";
         }
-        
+
         // send settings
         botBroadcast(String.format("settings player_names %s", playerNames));
         for (IOPlayer bot : this.bots) {
@@ -131,10 +133,11 @@ public class EngineAPI {
             bot.send(String.format("settings time_per_move %d", bot.getTimePerMove()));
         }
     }
-    
+
     /**
      * Asks the engine for the details of the game
      * i.e. winner, etc.
+     *
      * @return Detail string
      */
     public String askGameDetails() {
@@ -143,13 +146,14 @@ public class EngineAPI {
         } catch (IOException ex) {
             System.err.println(ex);
         }
-        
+
         return "";
     }
-    
+
     /**
      * Asks the engine for the game file for the
      * visualizer
+     *
      * @return The played game in string representation
      */
     public String askPlayedGame() {
@@ -158,15 +162,16 @@ public class EngineAPI {
         } catch (IOException ex) {
             System.err.println(ex);
         }
-        
+
         return "";
     }
-    
+
     /**
      * Blocking method
      * Asks something from given bot and waits for reponse.
+     *
      * @param botIndex Bot to ask
-     * @param message Message to send
+     * @param message  Message to send
      * @return The response to send to the engine
      * @throws IOException
      */
@@ -174,11 +179,12 @@ public class EngineAPI {
         IOPlayer bot = bots.get(botIndex);
         return String.format("bot %d %s", botIndex, bot.ask(message));
     }
-    
+
     /**
      * Sends message to a given bot
+     *
      * @param botIndex Bot to send to
-     * @param message Message to send
+     * @param message  Message to send
      * @return False if message send failed, true otherwise
      * @throws IOException
      */
@@ -186,11 +192,12 @@ public class EngineAPI {
         IOPlayer bot = bots.get(botIndex);
         bot.send(message);
     }
-    
+
     /**
      * Adds a warning from the engine to the bot's dump
+     *
      * @param botIndex Bot for which the warning is meant
-     * @param warning Warning message
+     * @param warning  Warning message
      */
     private void botWarning(int botIndex, String warning) {
         IOPlayer bot = bots.get(botIndex);
@@ -199,6 +206,7 @@ public class EngineAPI {
 
     /**
      * Sends a message to all bots
+     *
      * @param message Message to send
      * @return False if message send failed, true otherwise
      */
@@ -210,9 +218,9 @@ public class EngineAPI {
     /**
      * Asks something from the engine and compares its answers
      * to expected answer
-     * @param message Message to send
+     *
+     * @param message  Message to send
      * @param expected Expected return from engine
-     * @param timeout Time the engine has to respond
      * @return True if expected answer was returned, false otherwise
      * @throws IOException
      */
