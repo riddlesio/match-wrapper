@@ -36,8 +36,9 @@ public class IOPlayer extends IOWrapper {
     private int maxTimeouts;
     private StringBuilder dump;
     private int errorCounter;
-    
-    private final String NULL_MOVE = "no_moves";
+
+    private final String NULL_MOVE1 = "no_moves";
+    private final String NULL_MOVE2 = "pass";
 
     public IOPlayer(Process process, int id, long timebankMax, long timePerMove, int maxTimeouts) {
         super(process);
@@ -92,8 +93,12 @@ public class IOPlayer extends IOWrapper {
         long timeElapsed = System.currentTimeMillis() - startTime;
         updateTimeBank(timeElapsed);
 
-        if (response.equalsIgnoreCase(this.NULL_MOVE)) {
-            botDump(this.NULL_MOVE);
+        if (response.equalsIgnoreCase(this.NULL_MOVE1)) {
+            botDump(this.NULL_MOVE1);
+            return "";
+        }
+        if (response.equalsIgnoreCase(this.NULL_MOVE2)) {
+            botDump(this.NULL_MOVE2);
             return "";
         }
         if (response.isEmpty()) {
@@ -113,7 +118,7 @@ public class IOPlayer extends IOWrapper {
      */
     protected String handleResponseTimeout(long timeout) {
         addToDump(String.format("Response timed out (%dms), let your bot return '%s'"
-            + " instead of nothing or make it faster.", timeout, this.NULL_MOVE));
+            + " instead of nothing or make it faster.", timeout, this.NULL_MOVE1));
         addError();
         return "";
     }
