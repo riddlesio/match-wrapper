@@ -212,7 +212,6 @@ public class EngineAPI {
      * to expected answer
      * @param message Message to send
      * @param expected Expected return from engine
-     * @param timeout Time the engine has to respond
      * @return True if expected answer was returned, false otherwise
      * @throws IOException
      */

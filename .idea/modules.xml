@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/game-wrapper.iml" filepath="$PROJECT_DIR$/.idea/modules/game-wrapper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/game-wrapper_main.iml" filepath="$PROJECT_DIR$/.idea/modules/game-wrapper_main.iml" group="game-wrapper" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/game-wrapper_test.iml" filepath="$PROJECT_DIR$/.idea/modules/game-wrapper_test.iml" group="game-wrapper" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/game-wrapper.iml" filepath="$PROJECT_DIR$/.idea/game-wrapper.iml" />
     </modules>
   </component>
 </project>
