@@ -40,7 +40,7 @@ public class IOEngine extends IOWrapper {
 
     /**
      * Send line to engine
-     * @param line Line to send
+     * @param message Message to send
      * @return True if write was successful, false otherwise
      */
     public boolean send(String message) throws IOException {
@@ -49,8 +49,7 @@ public class IOEngine extends IOWrapper {
     
     /**
      * Send line to engine and waits for response
-     * @param line Line to output
-     * @param timeout Time before timeout
+     * @param message Message to send
      * @return Engine's response
      * @throws IOException
      */

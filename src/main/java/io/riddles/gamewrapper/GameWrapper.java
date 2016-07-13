@@ -18,19 +18,22 @@
 
 package io.riddles.gamewrapper;
 
+import io.riddles.gamewrapper.runner.MatchRunner;
+import io.riddles.gamewrapper.runner.Reportable;
+import io.riddles.gamewrapper.runner.Runnable;
+import io.riddles.gamewrapper.runner.ScenarioRunner;
+import org.json.JSONObject;
+
 import java.io.FileWriter;
 import java.io.IOException;
-import io.riddles.gamewrapper.runner.*;
-import io.riddles.gamewrapper.runner.Runnable;
-import org.json.JSONObject;
 
 /**
  * GameWrapper class
- * 
+ * <p>
  * Runs all the processes needed for playing the game, namely
  * the engine and all bots. EngineAPI class to handle communication
  * between those processes
- * 
+ *
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
 public class GameWrapper implements Runnable {
@@ -40,28 +43,58 @@ public class GameWrapper implements Runnable {
     private int maxTimeouts = 2; // 2 timeouts default before shutdown
     private String resultFilePath;
     private Runnable runner;
-    
+
+    public static void main(String[] args) {
+
+        JSONObject config;
+        GameWrapper game = new GameWrapper();
+
+        try {
+            config = new JSONObject(args[0]);
+            game.prepare(config);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to parse settings.");
+        }
+
+        try {
+            System.out.println("Starting...");
+            game.run();
+
+            System.out.println("Stopping...");
+            game.postrun();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error while running game.");
+        }
+
+        System.out.println("Done.");
+        System.exit(0);
+    }
+
     /**
      * Sets timebank settings for the bots
+     *
      * @param config The JSON string which contains the settings
      */
-     private void parseSettings(JSONObject config) {
+    private void parseSettings(JSONObject config) {
 
-         JSONObject wrapperConfig = config.getJSONObject("wrapper");
+        JSONObject wrapperConfig = config.getJSONObject("wrapper");
 
-         if (wrapperConfig.has("timebankMax")) {
-             timebankMax = wrapperConfig.getLong("timebankMax");
-         }
+        if (wrapperConfig.has("timebankMax")) {
+            timebankMax = wrapperConfig.getLong("timebankMax");
+        }
 
-         if (wrapperConfig.has("timePerMove")) {
-             timePerMove = wrapperConfig.getLong("timePerMove");
-         }
+        if (wrapperConfig.has("timePerMove")) {
+            timePerMove = wrapperConfig.getLong("timePerMove");
+        }
 
-         if (wrapperConfig.has("maxTimeouts")) {
-             maxTimeouts = wrapperConfig.getInt("maxTimeouts");
-         }
+        if (wrapperConfig.has("maxTimeouts")) {
+            maxTimeouts = wrapperConfig.getInt("maxTimeouts");
+        }
 
-         resultFilePath = wrapperConfig.getString("resultFilePath");
+        resultFilePath = wrapperConfig.getString("resultFile");
     }
 
     @Override
@@ -117,34 +150,5 @@ public class GameWrapper implements Runnable {
             System.err.println("Failed to write to result.json");
             System.err.println(e.getMessage());
         }
-    }
-
-    public static void main(String[] args) {
-
-        JSONObject config;
-        GameWrapper game = new GameWrapper();
-
-        try {
-            config = new JSONObject(args[0]);
-            game.prepare(config);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to parse settings.");
-        }
-        
-        try {
-            System.out.println("Starting...");
-            game.run();
-
-            System.out.println("Stopping...");
-            game.postrun();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error while running game.");
-        }
-
-        System.out.println("Done.");
-        System.exit(0);
     }
 }

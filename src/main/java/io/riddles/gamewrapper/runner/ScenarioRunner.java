@@ -1,11 +1,13 @@
 package io.riddles.gamewrapper.runner;
 
+import io.riddles.gamewrapper.io.IOPlayer;
 import io.riddles.gamewrapper.io.IOWrapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by niko on 26/05/16.
@@ -13,21 +15,23 @@ import java.util.List;
 public class ScenarioRunner extends AbstractRunner implements Runnable, Reportable {
 
     private IOWrapper subject;
+    private String subjectType;
     private JSONArray scenario;
     private Long timeout;
 
     public ScenarioRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
 
         super(timebankMax, timePerMove, maxTimeouts);
+        timeout = 2000L;
     }
 
     @Override
     public void prepare(JSONObject config) throws IOException {
 
         JSONObject subjectConfig = config.getJSONObject("subject");
-        String subjectType = subjectConfig.getString("type");
         String subjectCommand = subjectConfig.getString("command");
         scenario = config.getJSONArray("scenario");
+        subjectType = subjectConfig.getString("type");
 
         switch (subjectType) {
 
@@ -55,6 +59,10 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
                     subject.write(action);
                 } else {
                     String response = subject.ask(action, timeout);
+
+                    if (response.isEmpty()) {
+                        throw new IOException("Response timed out (2000ms)");
+                    }
                 }
             }
 
@@ -81,17 +89,30 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     private JSONObject createErrorResult(Exception exception) {
 
         JSONObject error = new JSONObject();
-        error.append("message", exception.getMessage());
+        error.put("message", exception.getMessage());
 
         JSONObject result = createResult("error");
-        result.append("error", error);
+        result.put("error", error);
 
         return result;
     }
 
     private JSONObject createResult(String status) {
+
+        String errors = subject.getStderr();
+
+        JSONObject subjectResult = new JSONObject();
+        subjectResult.put("errors", errors);
+
+        if (Objects.equals(subjectType, "bot")) {
+            String dump = ((IOPlayer) subject).getDump();
+            subjectResult.put("log", dump);
+        }
+
         JSONObject result = new JSONObject();
-        result.append("status", status);
+        result.put("status", status);
+        result.put("subject", subjectResult);
+
         return result;
     }
 }
