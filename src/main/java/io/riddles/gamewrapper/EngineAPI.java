@@ -59,7 +59,6 @@ public class EngineAPI {
      * @throws IOException
      */
     public void handle(String message) throws IOException {
-
         if (message == null || message.length() <= 0 || message.equals("end")) {
             this.ended = true;
             return;
@@ -129,6 +128,7 @@ public class EngineAPI {
         botBroadcast(String.format("settings player_names %s", playerNames));
         for (IOPlayer bot : this.bots) {
             bot.send(String.format("settings your_bot player%d", bot.getId()));
+            bot.send(String.format("settings your_botid %d", bot.getId()));
             bot.send(String.format("settings timebank %d", bot.getTimebankMax()));
             bot.send(String.format("settings time_per_move %d", bot.getTimePerMove()));
         }

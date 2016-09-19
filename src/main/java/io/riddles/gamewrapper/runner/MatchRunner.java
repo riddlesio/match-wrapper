@@ -1,6 +1,5 @@
 package io.riddles.gamewrapper.runner;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import io.riddles.gamewrapper.EngineAPI;
 import io.riddles.gamewrapper.io.IOEngine;
 import io.riddles.gamewrapper.io.IOPlayer;
@@ -167,7 +166,7 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
      * @throws IOException
      */
     private void addPlayer(String command) throws IOException {
-        int id = players.size();
+        int id = players.size()+1;
         players.add(createPlayer(command, id));
     }
 
