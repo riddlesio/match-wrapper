@@ -25,8 +25,11 @@ gradle build
 
 
 ## Test
-Run run_wrapper.sh to test Game Wrapper with provided test bot and test
-engine.
+Example:
+
+````
+./run_wrapper.sh '{"wrapper":{"timebankMax":10000,"maxTimeouts":2,"resultFile":"\/result_dir\/52e9626e-ae7f-4059-bb92-1b173bc29c82-result.json","timePerMove":100},"match":{"bots":[{"command":"java -cp /home/jim/workspace/jimbotbooking/out/production/jimbotbooking bot.BotStarter"},{"command":"java -cp /home/jim/workspace/jimbotbooking/out/production/jimbotbooking bot.BotStarter"}],"engine":{"command":"java -jar /home/jim/workspace/bookinggame-engine/build/libs/bookinggame-1.3.0.jar"}}}'
+````
 
 ## TODO
 specify API for Game Wrapper - Engine communication

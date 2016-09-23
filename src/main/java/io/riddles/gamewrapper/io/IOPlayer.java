@@ -96,19 +96,19 @@ public class IOPlayer extends IOWrapper {
 
         if (response.equalsIgnoreCase(NULL_MOVE1)) {
             botDump(NULL_MOVE1);
-            return "";
+            return "pass";
         }
         if (response.equalsIgnoreCase(NULL_MOVE2)) {
             botDump(NULL_MOVE2);
-            return "";
+            return "pass";
         }
         if (response.isEmpty()) {
             botDump("null");
-            return "";
+            return "null";
         }
 
         botDump(response);
-        return String.format("bot %d %s", this.id, response);
+        return response;
     }
 
     /**

@@ -35,7 +35,7 @@ public class IOEngine extends IOWrapper {
 
     public IOEngine(Process process) {
         super(process);
-        this.inputQueue = new LinkedList<String>();
+        this.inputQueue = new LinkedList<>();
     }
 
     /**
@@ -85,7 +85,7 @@ public class IOEngine extends IOWrapper {
             
             try { 
                 Thread.sleep(2);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException ignored) {}
             
             message = this.inputQueue.poll();
         }
