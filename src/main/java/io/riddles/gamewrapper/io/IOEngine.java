@@ -35,22 +35,23 @@ public class IOEngine extends IOWrapper {
 
     public IOEngine(Process process) {
         super(process);
-        this.inputQueue = new LinkedList<String>();
+        this.inputQueue = new LinkedList<>();
     }
 
     /**
      * Send line to engine
-     * @param line Line to send
+     * @param message Message to send
      * @return True if write was successful, false otherwise
      */
     public boolean send(String message) throws IOException {
+
+        System.out.println(String.format("Engine in: '%s''", message));
         return write(message);
     }
     
     /**
      * Send line to engine and waits for response
-     * @param line Line to output
-     * @param timeout Time before timeout
+     * @param message Message to send
      * @return Engine's response
      * @throws IOException
      */
@@ -86,12 +87,14 @@ public class IOEngine extends IOWrapper {
             
             try { 
                 Thread.sleep(2);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException ignored) {}
             
             message = this.inputQueue.poll();
         }
 
         this.response = null;
+
+        System.out.println(String.format("Engine out: '%s'", message));
         
         return message;
     }

@@ -82,8 +82,9 @@ public class IOPlayer extends IOWrapper {
     public String getResponse() {
         
         if (this.errorCounter > this.maxTimeouts) {
-            addToDump(String.format("Maximum number (%d) of time-outs reached: skipping all moves.", this.maxTimeouts));
-            return "";
+            addToDump(String.format("Maximum number (%d) of time-outs reached: " +
+                    "skipping all moves.", this.maxTimeouts));
+            return "null";
         }
 
         long startTime = System.currentTimeMillis();
@@ -93,21 +94,21 @@ public class IOPlayer extends IOWrapper {
         long timeElapsed = System.currentTimeMillis() - startTime;
         updateTimeBank(timeElapsed);
 
-        if (response.equalsIgnoreCase(this.NULL_MOVE1)) {
-            botDump(this.NULL_MOVE1);
-            return "";
+        if (response.equalsIgnoreCase(NULL_MOVE1)) {
+            botDump(NULL_MOVE1);
+            return "pass";
         }
-        if (response.equalsIgnoreCase(this.NULL_MOVE2)) {
-            botDump(this.NULL_MOVE2);
-            return "";
+        if (response.equalsIgnoreCase(NULL_MOVE2)) {
+            botDump(NULL_MOVE2);
+            return "pass";
         }
         if (response.isEmpty()) {
-            botDump("null");
-            return "";
+            botDump("");
+            return "null";
         }
 
         botDump(response);
-        return String.format("bot %d %s", this.id, response);
+        return response;
     }
 
     /**
@@ -118,7 +119,7 @@ public class IOPlayer extends IOWrapper {
      */
     protected String handleResponseTimeout(long timeout) {
         addToDump(String.format("Response timed out (%dms), let your bot return '%s'"
-            + " instead of nothing or make it faster.", timeout, this.NULL_MOVE1));
+            + " instead of nothing or make it faster.", timeout, NULL_MOVE1));
         addError();
         return "";
     }
