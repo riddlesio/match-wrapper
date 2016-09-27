@@ -84,7 +84,7 @@ public class IOPlayer extends IOWrapper {
         if (this.errorCounter > this.maxTimeouts) {
             addToDump(String.format("Maximum number (%d) of time-outs reached: " +
                     "skipping all moves.", this.maxTimeouts));
-            return "";
+            return "null";
         }
 
         long startTime = System.currentTimeMillis();
@@ -103,7 +103,7 @@ public class IOPlayer extends IOWrapper {
             return "pass";
         }
         if (response.isEmpty()) {
-            botDump("null");
+            botDump("");
             return "null";
         }
 
