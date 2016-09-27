@@ -60,12 +60,16 @@ public class EngineAPI {
      */
     public void handle(String message) throws IOException {
 
+        Matcher m;
+
         if (message == null || message.length() <= 0 || message.equals("end")) {
             this.ended = true;
             return;
         }
 
-        Matcher m;
+//        // TODO: Make it possible to toggle verbose mode
+//        System.out.println(String.format("Received message: '%s'", message));
+
         if ((m = BOTNR_ASK.matcher(message)).find()) {
             this.engine.send(botAsk(Integer.parseInt(m.group(1)), m.group(2)));
         } else if ((m = BOTNR_SEND.matcher(message)).find()) {
@@ -77,7 +81,7 @@ public class EngineAPI {
         } else if (message.equals("ok")) {
             // do nothing, continue
         } else {
-            System.err.println("No match");
+            System.err.println(String.format("'%s' did not match any action", message));
             this.ended = true;
         }
     }

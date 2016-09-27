@@ -44,6 +44,8 @@ public class IOEngine extends IOWrapper {
      * @return True if write was successful, false otherwise
      */
     public boolean send(String message) throws IOException {
+
+        System.out.println(String.format("Engine in: '%s''", message));
         return write(message);
     }
     
@@ -91,6 +93,8 @@ public class IOEngine extends IOWrapper {
         }
 
         this.response = null;
+
+        System.out.println(String.format("Engine out: '%s'", message));
         
         return message;
     }
