@@ -33,10 +33,10 @@ public class AbstractRunner implements Reportable {
         return player;
     }
 
-    protected IOEngine createEngine(String command) throws IOException {
+    protected IOEngine createEngine(String command, JSONObject engineConfig) throws IOException {
 
         IOEngine engine;
-        engine = new IOEngine(wrapCommand(command));
+        engine = new IOEngine(wrapCommand(command), engineConfig);
         engine.run();
 
         return engine;

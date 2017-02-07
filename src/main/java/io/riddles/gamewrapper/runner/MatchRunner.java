@@ -1,14 +1,15 @@
 package io.riddles.gamewrapper.runner;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import io.riddles.gamewrapper.EngineAPI;
 import io.riddles.gamewrapper.io.IOEngine;
 import io.riddles.gamewrapper.io.IOPlayer;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 
 /**
  * Created by niko on 26/05/16.
@@ -32,7 +33,7 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
      * {
      *     engine: {
      *         command: String,
-     *         settings: {
+     *         configuration: {
      *
      *         }
      *     },
@@ -83,8 +84,6 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
         System.out.println(engine.getStderr());
         engine.finish();
     }
-
-
 
     private JSONObject createResults() {
 
@@ -150,14 +149,19 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
 
         String command = config.getString("command");
 
+        JSONObject engineConfig;
         try {
-            setEngine(command);
+            engineConfig = config.getJSONObject("configuration");
+        } catch (JSONException e) {
+            engineConfig = new JSONObject();
+        }
+
+        try {
+            setEngine(command, engineConfig);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to start engine.");
         }
-
-        // TODO: send settings to engine
     }
 
     /**
@@ -171,14 +175,12 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
         players.add(createPlayer(command, id));
     }
 
-
-
     /**
      * Creates and starts engine process
      * @param command Command to start process
      * @throws IOException
      */
-    private void setEngine(String command) throws IOException {
-        engine = createEngine(command);
+    private void setEngine(String command, JSONObject engineConfig) throws IOException {
+        engine = createEngine(command, engineConfig);
     }
 }

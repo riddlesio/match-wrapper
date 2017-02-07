@@ -78,7 +78,8 @@ public class EngineAPI {
             botWarning(Integer.parseInt(m.group(1)), m.group(2));
         } else if ((m = BOTALL_SEND.matcher(message)).find()) {
             botBroadcast(m.group(1));
-        } else if (message.equals("ok")) {
+        } else //noinspection StatementWithEmptyBody
+            if (message.equals("ok")) {
             // do nothing, continue
         } else {
             System.err.println(String.format("'%s' did not match any action", message));
@@ -100,7 +101,7 @@ public class EngineAPI {
 
         System.out.println("Engine initialized. Sending settings to engine..");
         this.engine.sendPlayers(bots);
-
+        this.engine.sendConfiguration();
 
         System.out.println("Settings sent to engine. Sending settings to bots...");
         this.sendBotSettings();

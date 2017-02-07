@@ -3,6 +3,7 @@ package io.riddles.gamewrapper.runner;
 import io.riddles.gamewrapper.io.IOPlayer;
 import io.riddles.gamewrapper.io.IOWrapper;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -39,7 +40,12 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
                 subject = createPlayer(subjectCommand, 0);
                 return;
             case "engine":
-                subject = createEngine(subjectCommand);
+                JSONObject engineConfig = new JSONObject();
+                try {
+                    engineConfig = subjectConfig.getJSONObject("configuration");
+                } catch (JSONException ignored) {}
+
+                subject = createEngine(subjectCommand, engineConfig);
                 return;
         }
 
