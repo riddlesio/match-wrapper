@@ -55,8 +55,7 @@ public class EngineAPI {
      * message the engine sends.
      *
      * @param message Input from the engine
-     * @return Next engine message
-     * @throws IOException
+     * @throws IOException exception
      */
     public void handle(String message) throws IOException {
 
@@ -67,8 +66,8 @@ public class EngineAPI {
             return;
         }
 
-//        // TODO: Make it possible to toggle verbose mode
-//        System.out.println(String.format("Received message: '%s'", message));
+        // TODO: Make it possible to toggle verbose mode
+        // System.out.println(String.format("Received message: '%s'", message));
 
         if ((m = BOTNR_ASK.matcher(message)).find()) {
             this.engine.send(botAsk(Integer.parseInt(m.group(1)), m.group(2)));
@@ -78,8 +77,7 @@ public class EngineAPI {
             botWarning(Integer.parseInt(m.group(1)), m.group(2));
         } else if ((m = BOTALL_SEND.matcher(message)).find()) {
             botBroadcast(m.group(1));
-        } else //noinspection StatementWithEmptyBody
-            if (message.equals("ok")) {
+        } else if (message.equals("ok")) {
             // do nothing, continue
         } else {
             System.err.println(String.format("'%s' did not match any action", message));
@@ -89,8 +87,6 @@ public class EngineAPI {
 
     /**
      * Run a whole game
-     *
-     * @return The details of the game
      */
     public void run() throws IOException {
 
@@ -190,7 +186,6 @@ public class EngineAPI {
      *
      * @param botIndex Bot to send to
      * @param message  Message to send
-     * @return False if message send failed, true otherwise
      * @throws IOException
      */
     private void botSend(int botIndex, String message) throws IOException {

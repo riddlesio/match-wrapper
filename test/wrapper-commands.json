@@ -1,0 +1,16 @@
+{
+  "wrapper": {
+    "timebankMax": 10000,
+    "timePerMove": 100,
+    "maxTimeouts": 2,
+    "resultFile": "./resultfile.json"
+  },
+  "match": {
+    "bots": [{
+      "command": "python test/hello_bot.py"
+    }],
+    "engine": {
+      "command": "python test/hello_engine.py"
+    }
+  }
+}

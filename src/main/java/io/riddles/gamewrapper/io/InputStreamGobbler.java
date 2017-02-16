@@ -28,7 +28,7 @@ import java.io.InputStreamReader;
  * Keeps trying to read output from given process input/error stream. Stores read value and
  * sets a response to read value if it is not the error stream.
  * 
- * @author Jim van Eeden <jim@starapple.nl>
+ * @author Jim van Eeden <jim@riddles.io>
  */
 public class InputStreamGobbler extends Thread {
     
@@ -56,20 +56,20 @@ public class InputStreamGobbler extends Thread {
             InputStreamReader inputStreamReader = new InputStreamReader(this.inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-            while (!finished && (lastLine = bufferedReader.readLine()) != null) {
-                if (/*!lastLine.contains("VM warning") && */buffer.length() < 1000000) { //catches bots that return way too much (infinite loop)
-                    if (this.type.equals("output")) {
-                       this.wrapper.response = lastLine;
-                       if (this.wrapper.inputQueue != null) {
-                           this.wrapper.inputQueue.add(lastLine);
-                       }
-                    }
-                    buffer.append(lastLine + "\n");
+            while (!this.finished && (lastLine = bufferedReader.readLine()) != null) {
+                if (this.buffer.length() > 1000000) break; //catches bots that return way too much (infinite loop)
+
+                if (this.type.equals("output")) {
+                   this.wrapper.response = lastLine;
+                   if (this.wrapper.inputQueue != null) {
+                       this.wrapper.inputQueue.add(lastLine);
+                   }
                 }
+                this.buffer.append(lastLine).append("\n");
             }
             try {
                 bufferedReader.close();
-            } catch (IOException e) {}
+            } catch (IOException ignored) {}
             
         } catch (IOException ex) {
             System.err.println(ex);

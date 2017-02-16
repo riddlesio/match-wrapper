@@ -44,7 +44,8 @@ public class GameWrapper implements Runnable {
     private String resultFilePath;
     private Runnable runner;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        long startTime = System.currentTimeMillis();
 
         JSONObject config;
         GameWrapper game = new GameWrapper();
@@ -53,24 +54,37 @@ public class GameWrapper implements Runnable {
             config = new JSONObject(args[0]);
             game.prepare(config);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to parse settings.");
         }
 
-        try {
-            System.out.println("Starting...");
-            game.run();
+        System.out.println("Starting...");
+        game.run();
 
-            System.out.println("Stopping...");
-            game.postrun();
+        long timeElapsed = System.currentTimeMillis() - startTime;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error while running game.");
-        }
+        System.out.println("Stopping...");
+        game.postrun(timeElapsed);
 
         System.out.println("Done.");
         System.exit(0);
+    }
+
+    @Override
+    public void prepare(JSONObject config) throws IOException {
+        JSONObject runnerConfig;
+        parseSettings(config);
+
+        if (config.has("match")) {
+            runnerConfig = config.getJSONObject("match");
+            this.runner = new MatchRunner(this.timebankMax, this.timePerMove, this.maxTimeouts);
+        } else if (config.has("scenario")) {
+            runnerConfig = config.getJSONObject("scenario");
+            this.runner = new ScenarioRunner(this.timebankMax, this.timePerMove, this.maxTimeouts);
+        } else {
+            throw new RuntimeException("Config does not contain either match or scenario");
+        }
+
+        this.runner.prepare(runnerConfig);
     }
 
     /**
@@ -83,72 +97,42 @@ public class GameWrapper implements Runnable {
         JSONObject wrapperConfig = config.getJSONObject("wrapper");
 
         if (wrapperConfig.has("timebankMax")) {
-            timebankMax = wrapperConfig.getLong("timebankMax");
+            this.timebankMax = wrapperConfig.getLong("timebankMax");
         }
 
         if (wrapperConfig.has("timePerMove")) {
-            timePerMove = wrapperConfig.getLong("timePerMove");
+            this.timePerMove = wrapperConfig.getLong("timePerMove");
         }
 
         if (wrapperConfig.has("maxTimeouts")) {
-            maxTimeouts = wrapperConfig.getInt("maxTimeouts");
+            this.maxTimeouts = wrapperConfig.getInt("maxTimeouts");
         }
 
-        resultFilePath = wrapperConfig.getString("resultFile");
-    }
-
-    @Override
-    public void prepare(JSONObject config) throws IOException {
-
-        JSONObject runnerConfig;
-        parseSettings(config);
-
-        if (config.has("match")) {
-            runnerConfig = config.getJSONObject("match");
-            runner = new MatchRunner(timebankMax, timePerMove, maxTimeouts);
-            runner.prepare(runnerConfig);
-            return;
-        }
-
-        if (config.has("scenario")) {
-            runnerConfig = config.getJSONObject("scenario");
-            runner = new ScenarioRunner(timebankMax, timePerMove, maxTimeouts);
-            runner.prepare(runnerConfig);
-            return;
-        }
-
-        throw new RuntimeException("Config does not contain either match or scenario");
+        this.resultFilePath = wrapperConfig.getString("resultFile");
     }
 
     @Override
     public void run() throws IOException {
-        runner.run();
+        this.runner.run();
     }
 
     @Override
-    public void postrun() {
+    public void postrun(long responseTime) throws IOException {
+        this.runner.postrun(responseTime);
 
-        runner.postrun();
-        JSONObject resultSet = ((Reportable) runner).getResults();
+        JSONObject resultSet = ((Reportable) this.runner).getResults();
 
         System.out.println("Saving game...");
         saveGame(resultSet);
     }
 
-    private void saveGame(JSONObject result) {
+    private void saveGame(JSONObject result) throws IOException {
+        System.out.println("Writing to result.json");
 
-        try {
-            System.out.println("Writing to result.json");
+        FileWriter writer = new FileWriter(this.resultFilePath);
+        writer.write(result.toString());
+        writer.close();
 
-            FileWriter writer = new FileWriter(resultFilePath);
-            writer.write(result.toString());
-            writer.close();
-
-            System.out.println("Finished writing to result.json");
-
-        } catch (IOException e) {
-            System.err.println("Failed to write to result.json");
-            System.err.println(e.getMessage());
-        }
+        System.out.println("Finished writing to result.json");
     }
 }

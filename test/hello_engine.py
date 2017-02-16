@@ -16,28 +16,33 @@ def run():
             return
 
 def handle_message(message):
-    err('Message received: ' + message)
+    err('engine received: ' + message)
     parts = message.split()
-    if not parts:
-        err('Unable to parse line (empty)') 
-    elif parts[0] == 'initialize':
-        initialize()
-    elif parts[0] == 'start':
-        start()
-    elif parts[0] == 'details':
-        details()
-    elif parts[0] == 'bot_ids':
-        # set bot ids
-        pass
-    elif parts[0] == 'bot':
-        handle_bot(int(parts[1]))
-    else:
-        err('Unable to parse line')
 
-def initialize():
+    if not parts:
+        return err('Unable to parse line (empty)')
+
+    message_map = {
+        'initialize': initialize,
+        'start': start,
+        'details': details,
+        'game': game,
+        'bot_ids': do_nothing,
+        'configuration': do_nothing,
+        'bot': handle_bot,
+    }
+
+    message_type = parts.pop(0)
+
+    if message_type not in message_map:
+        return err('Unable to parse line')
+
+    message_map[message_type](*parts)
+
+def initialize(*args):
     out('ok')
 
-def start():
+def start(*args):
     global roundnr
     roundnr = roundnr + 1
     out('bot all send settings timebank 1000')
@@ -45,17 +50,23 @@ def start():
     out('bot 0 send update player1 points 0')
     out('bot 0 ask hello')
 
-def handle_bot(bot_id):
+def handle_bot(bot_id, *args):
     global winner
-    if bot_id == 0:
+    if int(bot_id) == 0:
         winner = 0
         end()
 
-def end():
+def end(*args):
     out('end')
 
-def details():
+def do_nothing(*args):
+    pass
+
+def details(*args):
     out('winner {} round {}'.format(winner, roundnr))
+
+def game(*args):
+    out('{{"winner": {}}}'.format(winner))
 
 def out(message):
     sys.stdout.write(message + '\n')

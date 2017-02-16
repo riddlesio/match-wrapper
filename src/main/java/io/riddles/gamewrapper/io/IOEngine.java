@@ -49,7 +49,7 @@ public class IOEngine extends IOWrapper {
      */
     public boolean send(String message) throws IOException {
 
-        System.out.println(String.format("Engine in: '%s''", message));
+        System.out.println(String.format("Engine in: '%s'", message));
         return write(message);
     }
     
@@ -57,7 +57,7 @@ public class IOEngine extends IOWrapper {
      * Send line to engine and waits for response
      * @param message Message to send
      * @return Engine's response
-     * @throws IOException
+     * @throws IOException exception
      */
     public String ask(String message) throws IOException {
         return super.ask(message, this.TIMEOUT);
