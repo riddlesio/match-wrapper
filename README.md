@@ -28,7 +28,7 @@ gradle build
 Example:
 
 ````
-./run_wrapper.sh '{"wrapper":{"timebankMax":10000,"maxTimeouts":2,"resultFile":"\/result_dir\/52e9626e-ae7f-4059-bb92-1b173bc29c82-result.json","timePerMove":100},"match":{"bots":[{"command":"java -cp /home/jim/workspace/jimbotbooking/out/production/jimbotbooking bot.BotStarter"},{"command":"java -cp /home/jim/workspace/jimbotbooking/out/production/jimbotbooking bot.BotStarter"}],"engine":{"command":"java -jar /home/jim/workspace/bookinggame-engine/build/libs/bookinggame-1.3.0.jar"}}}'
+./run_wrapper.sh '{"wrapper":{"timebankMax":10000,"maxTimeouts":2,"resultFile":"./resultfile.json","timePerMove":100},"match":{"bots":[{"command":"java -cp /home/jim/workspace/light-riders-starter-bot/out/production/light-riders-starter-bot bot.BotStarter"},{"command":"java -cp /home/jim/workspace/light-riders-starter-bot/out/production/light-riders-starter-bot bot.BotStarter"}],"engine":{"command":"java -jar /home/jim/workspace/light-riders-engine/build/libs/trongameengine-1.0.0.jar"}}}'
 ````
 
 ## TODO

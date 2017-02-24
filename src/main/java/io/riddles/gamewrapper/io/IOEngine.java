@@ -17,6 +17,8 @@
 
 package io.riddles.gamewrapper.io;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -32,9 +34,11 @@ import java.util.LinkedList;
 public class IOEngine extends IOWrapper {
     
     private final long TIMEOUT = 2000; // 2 seconds
+    private JSONObject configuration;
 
-    public IOEngine(Process process) {
+    public IOEngine(Process process, JSONObject configuration) {
         super(process);
+        this.configuration = configuration;
         this.inputQueue = new LinkedList<>();
     }
 
@@ -45,7 +49,7 @@ public class IOEngine extends IOWrapper {
      */
     public boolean send(String message) throws IOException {
 
-        System.out.println(String.format("Engine in: '%s''", message));
+        System.out.println(String.format("Engine in: '%s'", message));
         return write(message);
     }
     
@@ -53,7 +57,7 @@ public class IOEngine extends IOWrapper {
      * Send line to engine and waits for response
      * @param message Message to send
      * @return Engine's response
-     * @throws IOException
+     * @throws IOException exception
      */
     public String ask(String message) throws IOException {
         return super.ask(message, this.TIMEOUT);
@@ -132,6 +136,10 @@ public class IOEngine extends IOWrapper {
             connector = ",";
         }
         return write(message.toString());
+    }
+
+    public boolean sendConfiguration() {
+        return write("configuration " + this.configuration.toString());
     }
 }
 

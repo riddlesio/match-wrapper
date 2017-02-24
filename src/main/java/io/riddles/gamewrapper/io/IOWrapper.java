@@ -73,7 +73,7 @@ public class IOWrapper implements Runnable {
      * @param line Output line
      * @param timeout Time the process has to respond
      * @return Response from process
-     * @throws IOException
+     * @throws IOException exception
      */
     public String ask(String line, long timeout) throws IOException {
         if (write(line)) {
@@ -99,9 +99,7 @@ public class IOWrapper implements Runnable {
                 return handleResponseTimeout(timeout);
             }
 
-            try { 
-                Thread.sleep(2);
-            } catch (InterruptedException e) {}
+            try { Thread.sleep(2); } catch (InterruptedException ignored) {}
         }
         
         if (this.inputQueue != null) {
@@ -127,17 +125,16 @@ public class IOWrapper implements Runnable {
      * Ends the process and it's communication
      */
     protected void finish() {
-        if (this.finished)
-            return;
+        if (this.finished) return;
 
         // stop io streams
-        try { this.inputStream.close(); } catch (IOException e) {}
+        try { this.inputStream.close(); } catch (IOException ignored) {}
         this.outputGobbler.finish();
         this.errorGobbler.finish();
         
         // end the process
         this.process.destroy();
-        try { this.process.waitFor(); } catch (InterruptedException ex) {}
+        try { this.process.waitFor(); } catch (InterruptedException ignored) {}
 
         this.finished = true;
     }
@@ -163,10 +160,10 @@ public class IOWrapper implements Runnable {
         return this.errorGobbler.getData();
     }
 
-    @Override
     /**
      * Start the communication with the process
      */
+    @Override
     public void run() {
         this.outputGobbler.start();
         this.errorGobbler.start();

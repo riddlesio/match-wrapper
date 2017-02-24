@@ -1,16 +1,33 @@
+// Copyright 2016 riddles.io (developers@riddles.io)
+
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+
+//        http://www.apache.org/licenses/LICENSE-2.0
+
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
+//    For the full copyright and license information, please view the LICENSE
+//    file that was distributed with this source code.
+
 package io.riddles.gamewrapper.runner;
 
 import io.riddles.gamewrapper.io.IOPlayer;
 import io.riddles.gamewrapper.io.IOWrapper;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by niko on 26/05/16.
+ * @author Niko van Meurs <niko@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
 public class ScenarioRunner extends AbstractRunner implements Runnable, Reportable {
 
@@ -20,9 +37,8 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     private Long timeout;
 
     public ScenarioRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
-
         super(timebankMax, timePerMove, maxTimeouts);
-        timeout = 2000L;
+        this.timeout = 2000L;
     }
 
     @Override
@@ -30,16 +46,21 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
 
         JSONObject subjectConfig = config.getJSONObject("subject");
         String subjectCommand = subjectConfig.getString("command");
-        scenario = config.getJSONArray("scenario");
-        subjectType = subjectConfig.getString("type");
+        this.scenario = config.getJSONArray("scenario");
+        this.subjectType = subjectConfig.getString("type");
 
-        switch (subjectType) {
+        switch (this.subjectType) {
 
             case "bot":
-                subject = createPlayer(subjectCommand, 0);
+                this.subject = createPlayer(subjectCommand, 0);
                 return;
             case "engine":
-                subject = createEngine(subjectCommand);
+                JSONObject engineConfig = new JSONObject();
+                try {
+                    engineConfig = subjectConfig.getJSONObject("configuration");
+                } catch (JSONException ignored) {}
+
+                this.subject = createEngine(subjectCommand, engineConfig);
                 return;
         }
 
@@ -49,16 +70,16 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     public void run() {
 
         JSONObject result;
-        int scenarioSize = scenario.length();
+        int scenarioSize = this.scenario.length();
 
         try {
             for (int i = 0; i < scenarioSize; i++) {
-                String action = scenario.getString(i);
+                String action = this.scenario.getString(i);
 
                 if (i + 1 < scenarioSize) {
-                    subject.write(action);
+                    this.subject.write(action);
                 } else {
-                    String response = subject.ask(action, timeout);
+                    String response = this.subject.ask(action, this.timeout);
 
                     if (response.isEmpty()) {
                         throw new IOException("Response timed out (2000ms)");
@@ -77,9 +98,7 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     }
 
     @Override
-    public void postrun() {
-
-    }
+    public void postrun(long timeElapsed) {}
 
     private JSONObject createSuccessResult() {
 
@@ -99,13 +118,13 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
 
     private JSONObject createResult(String status) {
 
-        String errors = subject.getStderr();
+        String errors = this.subject.getStderr();
 
         JSONObject subjectResult = new JSONObject();
         subjectResult.put("errors", errors);
 
-        if (Objects.equals(subjectType, "bot")) {
-            String dump = ((IOPlayer) subject).getDump();
+        if (Objects.equals(this.subjectType, "bot")) {
+            String dump = ((IOPlayer) this.subject).getDump();
             subjectResult.put("log", dump);
         }
 

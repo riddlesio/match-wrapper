@@ -13,7 +13,7 @@ def run():
             return
 
 def handle_message(message):
-    sys.stderr.write("received: {}\n".format(message)) 
+    sys.stderr.write("bot received: {}\n".format(message))
     parts = message.split()
     if not parts:
         sys.stderr.write("Unable to parse line (empty)\n")

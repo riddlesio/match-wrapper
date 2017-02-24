@@ -18,6 +18,7 @@
 package io.riddles.gamewrapper.io;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * IOPlayer class
@@ -36,6 +37,7 @@ public class IOPlayer extends IOWrapper {
     private int maxTimeouts;
     private StringBuilder dump;
     private int errorCounter;
+    private ArrayList<Long> responseTimes;
 
     private final String NULL_MOVE1 = "no_moves";
     private final String NULL_MOVE2 = "pass";
@@ -49,12 +51,12 @@ public class IOPlayer extends IOWrapper {
         this.maxTimeouts = maxTimeouts;
         this.dump = new StringBuilder();
         this.errorCounter = 0;
+        this.responseTimes = new ArrayList<>();
     }
  
     /**
      * Send line to bot
      * @param line Line to send
-     * @return True if write was successful, false otherwise
      */
     public void send(String line) {
         addToDump(line);
@@ -68,7 +70,7 @@ public class IOPlayer extends IOWrapper {
      * the bot's timebank into account
      * @param line Line to output
      * @return Bot's response
-     * @throws IOException
+     * @throws IOException exception
      */
     public String ask(String line) throws IOException {
         send(String.format("%s %d", line, this.timebank));
@@ -92,6 +94,8 @@ public class IOPlayer extends IOWrapper {
         String response = super.getResponse(this.timebank);
         
         long timeElapsed = System.currentTimeMillis() - startTime;
+
+        this.responseTimes.add(timeElapsed);
         updateTimeBank(timeElapsed);
 
         if (response.equalsIgnoreCase(NULL_MOVE1)) {
@@ -168,7 +172,7 @@ public class IOPlayer extends IOWrapper {
      * @param dumpy String to add to the dump
      */
     public void addToDump(String dumpy) {
-        dump.append(dumpy + "\n");
+        this.dump.append(dumpy).append("\n");
     }
     
     /**
@@ -197,5 +201,12 @@ public class IOPlayer extends IOWrapper {
      */
     public long getTimePerMove() {
         return this.timePerMove;
+    }
+
+    /***
+     * @return A list with all response times
+     */
+    public ArrayList<Long> getResponseTimes() {
+        return this.responseTimes;
     }
 }
