@@ -47,8 +47,7 @@ public class IOEngine extends IOWrapper {
      * @param message Message to send
      * @return True if write was successful, false otherwise
      */
-    public boolean send(String message) throws IOException {
-
+    public boolean send(String message) {
         System.out.println(String.format("Engine in: '%s'", message));
         return write(message);
     }
@@ -135,11 +134,11 @@ public class IOEngine extends IOWrapper {
             message.append(String.format("%s%d", connector, i));
             connector = ",";
         }
-        return write(message.toString());
+        return send(message.toString());
     }
 
     public boolean sendConfiguration() {
-        return write("configuration " + this.configuration.toString());
+        return send("configuration " + this.configuration.toString());
     }
 }
 
