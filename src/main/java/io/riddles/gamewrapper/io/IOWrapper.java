@@ -19,7 +19,7 @@ package io.riddles.gamewrapper.io;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;;
 
 /**
  * IOWrapper class
@@ -38,7 +38,7 @@ public class IOWrapper implements Runnable {
     protected boolean finished;
     
     public String response;
-    public Queue<String> inputQueue;
+    public ConcurrentLinkedQueue<String> inputQueue;
     
     public IOWrapper(Process process) {
         this.inputStream = new OutputStreamWriter(process.getOutputStream());
@@ -76,6 +76,8 @@ public class IOWrapper implements Runnable {
      * @throws IOException exception
      */
     public String ask(String line, long timeout) throws IOException {
+        this.response = null;
+
         if (write(line)) {
             return getResponse(timeout);
         }
@@ -83,7 +85,8 @@ public class IOWrapper implements Runnable {
     }
 
     /**
-     * Waits until process returns a response and returns it
+     * Waits until process returns a response and returns it. Only the
+     * first response after the request is processed, others are ignored.
      * @param timeout Time before timeout
      * @return Process's response
      */
