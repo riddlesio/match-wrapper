@@ -96,7 +96,6 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
 
         this.players.forEach(IOPlayer::finish);
 
-        System.out.println(this.engine.getStderr());
         this.engine.finish();
     }
 

@@ -51,7 +51,7 @@ public class InputStreamGobbler extends Thread {
      */
     public void run() {
         String lastLine;
-        
+
         try {
             InputStreamReader inputStreamReader = new InputStreamReader(this.inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -70,9 +70,9 @@ public class InputStreamGobbler extends Thread {
             try {
                 bufferedReader.close();
             } catch (IOException ignored) {}
-            
+
         } catch (IOException ex) {
-            System.err.println(ex);
+            System.err.println(String.format("Readline failed: %s, type: %s", ex, this.type));
         }
     }
     

@@ -21,7 +21,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * IOEngine class
@@ -39,7 +39,7 @@ public class IOEngine extends IOWrapper {
     public IOEngine(Process process, JSONObject configuration) {
         super(process);
         this.configuration = configuration;
-        this.inputQueue = new LinkedList<>();
+        this.inputQueue = new ConcurrentLinkedQueue<>();
     }
 
     /**
@@ -91,7 +91,7 @@ public class IOEngine extends IOWrapper {
             try { 
                 Thread.sleep(2);
             } catch (InterruptedException ignored) {}
-            
+
             message = this.inputQueue.poll();
         }
 

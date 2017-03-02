@@ -73,6 +73,7 @@ public class IOPlayer extends IOWrapper {
      * @throws IOException exception
      */
     public String ask(String line) throws IOException {
+        this.response = null;
         send(String.format("%s %d", line, this.timebank));
         return getResponse();
     }

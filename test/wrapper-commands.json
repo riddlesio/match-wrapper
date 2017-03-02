@@ -7,10 +7,12 @@
   },
   "match": {
     "bots": [{
-      "command": "python test/hello_bot.py"
+      "command": "java -jar /home/jim/Downloads/tempbot1/run_ai.jar"
+    },{
+      "command": "java -jar /home/jim/Downloads/tempbot2/run_ai.jar"
     }],
     "engine": {
-      "command": "python test/hello_engine.py"
+      "command": "java -jar /home/jim/workspace/bookinggame-engine/build/libs/bookinggame-2.0.2.jar"
     }
   }
 }
