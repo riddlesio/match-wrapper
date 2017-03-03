@@ -116,8 +116,10 @@ public class IOEngine extends IOWrapper {
      * @return Empty string
      */
     protected String handleResponseTimeout(long timeout) {
-
         System.err.println(String.format("Engine took too long! (%dms)", this.TIMEOUT));
+        System.err.println("ENGINE ERROR LOG:\n");
+        System.err.println(this.getStderr());
+        System.err.println("\nEND ENGINE ERROR LOG");
         return "";
     }
     
