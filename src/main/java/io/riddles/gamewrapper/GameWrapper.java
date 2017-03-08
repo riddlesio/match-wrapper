@@ -38,6 +38,8 @@ import java.io.IOException;
  */
 public class GameWrapper implements Runnable {
 
+    public static boolean DEBUG = false;
+
     private long timebankMax = 10000L; // 10 seconds default
     private long timePerMove = 500L; // 0,5 seconds default
     private int maxTimeouts = 2; // 2 timeouts default before shutdown
@@ -106,6 +108,10 @@ public class GameWrapper implements Runnable {
 
         if (wrapperConfig.has("maxTimeouts")) {
             this.maxTimeouts = wrapperConfig.getInt("maxTimeouts");
+        }
+
+        if (wrapperConfig.has("debug")) {
+            DEBUG = wrapperConfig.getBoolean("debug");
         }
 
         this.resultFilePath = wrapperConfig.getString("resultFile");

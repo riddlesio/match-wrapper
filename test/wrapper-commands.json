@@ -3,20 +3,17 @@
     "timebankMax": 10000,
     "timePerMove": 100,
     "maxTimeouts": 2,
-    "resultFile": "./resultfile.json"
+    "resultFile": "./resultfile.json",
+    "debug": true
   },
   "match": {
     "bots": [{
-      "command": "java -jar /home/jim/workspace/catchfrauds-starterbot/build/libs/catchfraudes-starterbot-1.0.0.jar"
+      "command": "java -jar /home/jim/Downloads/tempbot1/run_ai.jar"
+    },{
+      "command": "java -jar /home/jim/Downloads/tempbot2/run_ai.jar"
     }],
     "engine": {
-      "command": "java -jar /home/jim/workspace/adyen-catchfrauds/build/libs/adyen-catchfrauds-1.1.1.jar",
-      "configuration": {
-        "dataFile": {
-          "type": "string",
-          "value": "/home/jim/Documents/catchfrauds-test-set-final.csv"
-        }
-      }
+      "command": "java -jar /home/jim/workspace/bookinggame-engine/build/libs/bookinggame-2.0.2.jar"
     }
   }
 }

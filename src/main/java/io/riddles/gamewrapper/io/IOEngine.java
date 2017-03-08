@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import io.riddles.gamewrapper.GameWrapper;
+
 /**
  * IOEngine class
  * 
@@ -108,6 +110,9 @@ public class IOEngine extends IOWrapper {
     public void finish() {
         super.finish();
         System.out.println("Engine shut down.");
+        if (GameWrapper.DEBUG) {
+            printErrors();
+        }
     }
     
     /**
@@ -117,9 +122,9 @@ public class IOEngine extends IOWrapper {
      */
     protected String handleResponseTimeout(long timeout) {
         System.err.println(String.format("Engine took too long! (%dms)", this.TIMEOUT));
-        System.err.println("ENGINE ERROR LOG:\n");
-        System.err.println(this.getStderr());
-        System.err.println("\nEND ENGINE ERROR LOG");
+        if (!GameWrapper.DEBUG) {
+            printErrors();
+        }
         return "";
     }
     
@@ -141,6 +146,12 @@ public class IOEngine extends IOWrapper {
 
     public boolean sendConfiguration() {
         return send("configuration " + this.configuration.toString());
+    }
+
+    private void printErrors() {
+        System.err.println("ENGINE ERROR LOG:\n");
+        System.err.println(this.getStderr());
+        System.err.println("\nEND ENGINE ERROR LOG");
     }
 }
 
