@@ -103,18 +103,22 @@ public class IOEngine extends IOWrapper {
         
         return message;
     }
-    
+
     /**
      * Shuts down the engine
      */
-    public void finish() {
-        super.finish();
+    public int finish() {
+        int exitStatus = super.finish();
+
         System.out.println("Engine shut down.");
+
         if (GameWrapper.DEBUG) {
             printErrors();
         }
+
+        return exitStatus;
     }
-    
+
     /**
      * Handles engine response time out
      * @param timeout Time before timeout

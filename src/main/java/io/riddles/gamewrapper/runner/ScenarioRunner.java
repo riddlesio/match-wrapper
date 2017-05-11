@@ -43,14 +43,12 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
 
     @Override
     public void prepare(JSONObject config) throws IOException {
-
+        this.scenario = config.getJSONArray("scenario");
         JSONObject subjectConfig = config.getJSONObject("subject");
         String subjectCommand = subjectConfig.getString("command");
-        this.scenario = config.getJSONArray("scenario");
         this.subjectType = subjectConfig.getString("type");
 
         switch (this.subjectType) {
-
             case "bot":
                 this.subject = createPlayer(subjectCommand, 0);
                 return;
@@ -98,7 +96,9 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     }
 
     @Override
-    public void postrun(long timeElapsed) {}
+    public int postrun(long timeElapsed) {
+        return this.subject.finish();
+    }
 
     private JSONObject createSuccessResult() {
 

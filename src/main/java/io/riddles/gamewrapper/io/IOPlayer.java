@@ -60,7 +60,7 @@ public class IOPlayer extends IOWrapper {
      */
     public void send(String line) {
         addToDump(line);
-        if (!super.write(line) && !this.finished) {
+        if (!super.write(line) && this.exitStatus == null) {
             addToDump("Write to bot failed, shutting down...");
         }
     }
@@ -136,6 +136,7 @@ public class IOPlayer extends IOWrapper {
      */
     private void addError() {
         this.errorCounter++;
+
         if (this.errorCounter > this.maxTimeouts) {
             finish();
         }
@@ -144,9 +145,12 @@ public class IOPlayer extends IOWrapper {
     /**
      * Shuts down the bot
      */
-    public void finish() {
-        super.finish();
+    public int finish() {
+        int exitStatus = super.finish();
+
         System.out.println("Bot shut down.");
+
+        return exitStatus;
     }
     
     /**

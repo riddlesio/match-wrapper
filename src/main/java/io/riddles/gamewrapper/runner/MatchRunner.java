@@ -91,12 +91,14 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     }
 
     @Override
-    public void postrun(long timeElapsed) {
+    public int postrun(long timeElapsed) {
         setResults(createResults(timeElapsed));
 
-        this.players.forEach(IOPlayer::finish);
+        int playerStatusSum = this.players.stream().mapToInt(IOPlayer::finish).sum();
 
-        this.engine.finish();
+        int engineStatus = this.engine.finish();
+
+        return playerStatusSum + engineStatus > 0 ? 1 : 0;
     }
 
     private JSONObject createResults(long timeElapsed) {

@@ -56,7 +56,7 @@ public class GameWrapper implements Runnable {
             config = new JSONObject(args[0]);
             game.prepare(config);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse settings.");
+            throw new RuntimeException("Failed to parse settings." + e.getMessage());
         }
 
         System.out.println("Starting...");
@@ -65,10 +65,10 @@ public class GameWrapper implements Runnable {
         long timeElapsed = System.currentTimeMillis() - startTime;
 
         System.out.println("Stopping...");
-        game.postrun(timeElapsed);
+        int exitStatus = game.postrun(timeElapsed);
 
         System.out.println("Done.");
-        System.exit(0);
+        System.exit(exitStatus);
     }
 
     @Override
@@ -123,13 +123,15 @@ public class GameWrapper implements Runnable {
     }
 
     @Override
-    public void postrun(long responseTime) throws IOException {
-        this.runner.postrun(responseTime);
+    public int postrun(long responseTime) throws IOException {
+        int exitStatus = this.runner.postrun(responseTime);
 
         JSONObject resultSet = ((Reportable) this.runner).getResults();
 
         System.out.println("Saving game...");
         saveGame(resultSet);
+
+        return exitStatus;
     }
 
     private void saveGame(JSONObject result) throws IOException {
