@@ -35,6 +35,7 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     private String subjectType;
     private JSONArray scenario;
     private Long timeout;
+    private boolean errored;
 
     public ScenarioRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
         super(timebankMax, timePerMove, maxTimeouts);
@@ -67,6 +68,7 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
 
     public void run() {
 
+        this.errored = false;
         JSONObject result;
         int scenarioSize = this.scenario.length();
 
@@ -92,12 +94,13 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
 
             result = createErrorResult(exception);
             setResults(result);
+            this.errored = true;
         }
     }
 
     @Override
     public int postrun(long timeElapsed) {
-        return this.subject.finish();
+        return this.errored ? 1 : 0;
     }
 
     private JSONObject createSuccessResult() {

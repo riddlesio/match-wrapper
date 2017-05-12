@@ -35,7 +35,8 @@ public class IOWrapper implements Runnable {
     private OutputStreamWriter inputStream;
     private InputStreamGobbler outputGobbler;
     private InputStreamGobbler errorGobbler;
-    protected Integer exitStatus;
+    protected boolean finished;
+    protected boolean errored;
     
     public String response;
     public ConcurrentLinkedQueue<String> inputQueue;
@@ -45,7 +46,8 @@ public class IOWrapper implements Runnable {
         this.outputGobbler = new InputStreamGobbler(process.getInputStream(), this, "output");
         this.errorGobbler = new InputStreamGobbler(process.getErrorStream(), this, "error");
         this.process = process;
-        this.exitStatus = null;
+        this.errored = false;
+        this.finished = false;
     }
     
     /**
@@ -54,7 +56,7 @@ public class IOWrapper implements Runnable {
      * @return True if write was successful, false otherwise
      */
     public boolean write(String line) {
-        if (this.exitStatus != null) return false;
+        if (this.finished) return false;
 
         try {
             this.inputStream.write(line + "\n");
@@ -128,7 +130,9 @@ public class IOWrapper implements Runnable {
      * Ends the process and it's communication
      */
     public int finish() {
-        if (this.exitStatus != null) return this.exitStatus;
+        if (this.finished) {
+            return this.errored ? 1 : 0;
+        }
 
         // stop io streams
         try { this.inputStream.close(); } catch (IOException ignored) {}
@@ -139,9 +143,9 @@ public class IOWrapper implements Runnable {
         this.process.destroy();
         try { this.process.waitFor(); } catch (InterruptedException ignored) {}
 
-        this.exitStatus = this.process.exitValue();
+        this.finished = true;
 
-        return this.exitStatus;
+        return this.errored ? 1 : 0;
     }
     
     /**

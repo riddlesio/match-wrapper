@@ -126,6 +126,7 @@ public class IOEngine extends IOWrapper {
      */
     protected String handleResponseTimeout(long timeout) {
         System.err.println(String.format("Engine took too long! (%dms)", this.TIMEOUT));
+        this.errored = true;
         if (!GameWrapper.DEBUG) {
             printErrors();
         }
