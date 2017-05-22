@@ -4,6 +4,7 @@
     "timePerMove": 100,
     "maxTimeouts": 2,
     "resultFile": "./resultfile.json",
+    "propagateBotExitCode": false,
     "debug": true
   },
   "match": {

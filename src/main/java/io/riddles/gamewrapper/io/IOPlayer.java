@@ -20,6 +20,8 @@ package io.riddles.gamewrapper.io;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import io.riddles.gamewrapper.GameWrapper;
+
 /**
  * IOPlayer class
  * 
@@ -148,6 +150,10 @@ public class IOPlayer extends IOWrapper {
      */
     public int finish() {
         int exitStatus = super.finish();
+
+        if (!GameWrapper.PROPAGATE_BOT_EXIT_CODE) {
+            exitStatus = 0;
+        }
 
         System.out.println("Bot shut down.");
 

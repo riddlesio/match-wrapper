@@ -39,6 +39,7 @@ import java.io.IOException;
 public class GameWrapper implements Runnable {
 
     public static boolean DEBUG = false;
+    public static boolean PROPAGATE_BOT_EXIT_CODE = false; // when true: if a bot crashes, wrapper exits with code 1
 
     private long timebankMax = 10000L; // 10 seconds default
     private long timePerMove = 500L; // 0,5 seconds default
@@ -112,6 +113,10 @@ public class GameWrapper implements Runnable {
 
         if (wrapperConfig.has("debug")) {
             DEBUG = wrapperConfig.getBoolean("debug");
+        }
+
+        if (wrapperConfig.has("propagateBotExitCode")) {
+            PROPAGATE_BOT_EXIT_CODE = wrapperConfig.getBoolean("propagateBotExitCode");
         }
 
         this.resultFilePath = wrapperConfig.getString("resultFile");
