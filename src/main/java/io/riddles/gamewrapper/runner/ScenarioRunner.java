@@ -34,12 +34,9 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     private IOWrapper subject;
     private String subjectType;
     private JSONArray scenario;
-    private Long timeout;
-    private boolean errored;
 
     public ScenarioRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
         super(timebankMax, timePerMove, maxTimeouts);
-        this.timeout = 2000L;
     }
 
     @Override
@@ -67,10 +64,9 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     }
 
     public void run() {
-
-        this.errored = false;
         JSONObject result;
         int scenarioSize = this.scenario.length();
+        long timeout = getScenarioTimeout();
 
         try {
             for (int i = 0; i < scenarioSize; i++) {
@@ -79,28 +75,41 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
                 if (i + 1 < scenarioSize) {
                     this.subject.write(action);
                 } else {
-                    String response = this.subject.ask(action, this.timeout);
+                    String response = this.subject.ask(action, timeout);
 
                     if (response.isEmpty()) {
-                        throw new IOException("Response timed out (2000ms)");
+                        throw new IOException(String.format("Response timed out (%dms)", timeout));
                     }
                 }
             }
 
             result = createSuccessResult();
-            setResults(result);
-
         } catch (IOException exception) {
-
             result = createErrorResult(exception);
-            setResults(result);
-            this.errored = true;
         }
+
+        setResults(result);
     }
 
     @Override
     public int postrun(long timeElapsed) {
-        return this.errored ? 1 : 0;
+        return 0;
+    }
+
+    private long getScenarioTimeout() {
+        try {
+            for (int i = 0; i < this.scenario.length(); i++) {
+                String action = this.scenario.getString(i);
+                String[] split = action.split(" ");
+
+                if (split[1].equals("timebank")) {
+                    return Integer.parseInt(split[2]);
+                }
+            }
+        } catch(Exception ignored) {}
+
+        System.err.println("Failed to read timebank from scenario");
+        return 2000L;
     }
 
     private JSONObject createSuccessResult() {
