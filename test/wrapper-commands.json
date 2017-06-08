@@ -2,7 +2,7 @@
   "wrapper": {
     "timebankMax": 2000,
     "timePerMove": 100,
-    "maxTimeouts": 2,
+    "maxTimeouts": 0,
     "resultFile": "./resultfile.json",
     "propagateBotExitCode": false,
     "debug": true
