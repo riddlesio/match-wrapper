@@ -15,10 +15,10 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.gamewrapper.runner;
+package io.riddles.matchwrapper.runner;
 
-import io.riddles.gamewrapper.io.IOPlayer;
-import io.riddles.gamewrapper.io.IOWrapper;
+import io.riddles.matchwrapper.io.IOPlayer;
+import io.riddles.matchwrapper.io.IOWrapper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +27,12 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
+ * ScenarioRunner class
+ *
+ * Feeds a given scenario to a subject (typically a bot)
+ * If the bot responds, status "ok" is stored. This is used for
+ * the input test on Riddles.io.
+ *
  * @author Niko van Meurs <niko@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
 public class ScenarioRunner extends AbstractRunner implements Runnable, Reportable {

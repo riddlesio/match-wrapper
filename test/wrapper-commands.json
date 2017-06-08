@@ -9,12 +9,13 @@
   },
   "match": {
     "bots": [{
-      "command": "java -jar /home/jim/workspace/fourinarow-starterbot-java/build/libs/fourinarow-starterbot-java-2.0.0.jar"
+      "command": "python /home/jim/workspace/match-wrapper/test/hello_bot.py"
     },{
-      "command": "java -jar /home/jim/workspace/fourinarow-starterbot-java/build/libs/fourinarow-starterbot-java-2.0.0.jar"
+      "command": "python /home/jim/workspace/match-wrapper/test/hello_bot.py"
     }],
     "engine": {
-      "command": "java -jar /home/jim/workspace/connect-four-engine/build/libs/game-1.0.1.jar"
+      "command": "python /home/jim/workspace/match-wrapper/test/hello_engine.py",
+      "configuration": {}
     }
   }
 }

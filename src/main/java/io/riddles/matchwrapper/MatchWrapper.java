@@ -16,27 +16,27 @@
 //    file that was distributed with this source code.
 
 
-package io.riddles.gamewrapper;
+package io.riddles.matchwrapper;
 
-import io.riddles.gamewrapper.runner.MatchRunner;
-import io.riddles.gamewrapper.runner.Reportable;
-import io.riddles.gamewrapper.runner.Runnable;
-import io.riddles.gamewrapper.runner.ScenarioRunner;
+import io.riddles.matchwrapper.runner.MatchRunner;
+import io.riddles.matchwrapper.runner.Reportable;
+import io.riddles.matchwrapper.runner.Runnable;
+import io.riddles.matchwrapper.runner.ScenarioRunner;
 import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * GameWrapper class
- * <p>
+ * MatchWrapper class
+ *
  * Runs all the processes needed for playing the game, namely
  * the engine and all bots. EngineAPI class to handle communication
  * between those processes
  *
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
-public class GameWrapper implements Runnable {
+public class MatchWrapper implements Runnable {
 
     public static boolean DEBUG = false;
     public static boolean PROPAGATE_BOT_EXIT_CODE = false; // when true: if a bot crashes, wrapper exits with code 1
@@ -51,7 +51,7 @@ public class GameWrapper implements Runnable {
         long startTime = System.currentTimeMillis();
 
         JSONObject config;
-        GameWrapper game = new GameWrapper();
+        MatchWrapper game = new MatchWrapper();
 
         try {
             config = new JSONObject(args[0]);

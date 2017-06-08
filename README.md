@@ -1,4 +1,4 @@
-# Riddles.io Game Wrapper
+# Riddles.io Match Wrapper
 
 Handles communication between a game engine and bots. To use the wrapper
 create gamewrapper.jar (see below) and provide at least 5 arguments when

@@ -15,18 +15,22 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.gamewrapper.runner;
+package io.riddles.matchwrapper.runner;
 
-import io.riddles.gamewrapper.io.IOEngine;
-import io.riddles.gamewrapper.io.IOPlayer;
+import io.riddles.matchwrapper.io.IOEngine;
+import io.riddles.matchwrapper.io.IOPlayer;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
 /**
+ * AbstractRunner abstract class
+ *
+ * Abstract class for all types of runners.
+ *
  * @author Niko van Meurs <niko@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
-public class AbstractRunner implements Reportable {
+public abstract class AbstractRunner implements Reportable {
 
     private Long timebankMax;
     private Long timePerMove;

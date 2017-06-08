@@ -15,11 +15,11 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.gamewrapper.runner;
+package io.riddles.matchwrapper.runner;
 
-import io.riddles.gamewrapper.EngineAPI;
-import io.riddles.gamewrapper.io.IOEngine;
-import io.riddles.gamewrapper.io.IOPlayer;
+import io.riddles.matchwrapper.EngineAPI;
+import io.riddles.matchwrapper.io.IOEngine;
+import io.riddles.matchwrapper.io.IOPlayer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +29,11 @@ import java.util.ArrayList;
 
 
 /**
+ * MatchRunner class
+ *
+ * Handles the running of a match between one or more bots
+ * and a game engine. Used for all types of matches on Riddles.io.
+ *
  * @author Niko van Meurs <niko@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
 public class MatchRunner extends AbstractRunner implements Runnable, Reportable {

@@ -15,7 +15,7 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.gamewrapper.io;
+package io.riddles.matchwrapper.io;
 
 import org.json.JSONObject;
 
@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import io.riddles.gamewrapper.GameWrapper;
+import io.riddles.matchwrapper.MatchWrapper;
 
 /**
  * IOEngine class
@@ -112,7 +112,7 @@ public class IOEngine extends IOWrapper {
 
         System.out.println("Engine shut down.");
 
-        if (GameWrapper.DEBUG) {
+        if (MatchWrapper.DEBUG) {
             printErrors();
         }
 
@@ -127,7 +127,7 @@ public class IOEngine extends IOWrapper {
     protected String handleResponseTimeout(long timeout) {
         System.err.println(String.format("Engine took too long! (%dms)", this.TIMEOUT));
         this.errored = true;
-        if (!GameWrapper.DEBUG) {
+        if (!MatchWrapper.DEBUG) {
             printErrors();
         }
         return "";

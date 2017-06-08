@@ -2,10 +2,10 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 // Include dependent libraries in archive.
-mainClassName = 'io.riddles.gamewrapper.GameWrapper'
+mainClassName = 'io.riddles.matchwrapper.MatchWrapper'
 
 sourceCompatibility = 1.8
-version = '1.2.7'
+version = '1.2.8'
 
 sourceSets {
     main {
@@ -21,7 +21,7 @@ sourceSets {
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'Riddles.io Game Wrapper',
+        attributes 'Implementation-Title': 'Riddles.io Match Wrapper',
                 'Implementation-Version': version,
                 'Main-Class': mainClassName
     }

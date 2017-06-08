@@ -15,10 +15,10 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.gamewrapper;
+package io.riddles.matchwrapper;
 
-import io.riddles.gamewrapper.io.IOEngine;
-import io.riddles.gamewrapper.io.IOPlayer;
+import io.riddles.matchwrapper.io.IOEngine;
+import io.riddles.matchwrapper.io.IOPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 /**
  * EngineAPI class
- * <p>
+ *
  * Handles all communication between the game wrapper and
  * the engine and bot processes
  *

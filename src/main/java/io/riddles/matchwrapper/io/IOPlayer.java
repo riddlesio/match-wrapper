@@ -15,12 +15,12 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.gamewrapper.io;
+package io.riddles.matchwrapper.io;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import io.riddles.gamewrapper.GameWrapper;
+import io.riddles.matchwrapper.MatchWrapper;
 
 /**
  * IOPlayer class
@@ -151,7 +151,7 @@ public class IOPlayer extends IOWrapper {
     public int finish() {
         int exitStatus = super.finish();
 
-        if (!GameWrapper.PROPAGATE_BOT_EXIT_CODE) {
+        if (!MatchWrapper.PROPAGATE_BOT_EXIT_CODE) {
             exitStatus = 0;
         }
 

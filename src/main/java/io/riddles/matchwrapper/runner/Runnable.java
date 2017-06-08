@@ -15,14 +15,20 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.gamewrapper.runner;
+package io.riddles.matchwrapper.runner;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 /**
+ * Runnable interface
+ *
  * @author Niko van Meurs <niko@riddles.io>, Jim van Eeden <jim@riddles.io>
  */
-public interface Reportable {
+public interface Runnable {
 
-    JSONObject getResults();
+    void prepare(JSONObject config) throws IOException;
+    void run() throws IOException;
+    int postrun(long timeElapsed) throws IOException;
 }
