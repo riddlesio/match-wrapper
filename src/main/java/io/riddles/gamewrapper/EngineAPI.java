@@ -35,6 +35,9 @@ import java.util.regex.Pattern;
  */
 public class EngineAPI {
 
+    private final long INITIAL_TIMEOUT = 30000; // 30 seconds
+    private final long DEFAULT_TIMEOUT = 2000; // 2 seconds
+
     private static final Pattern BOTNR_ASK = Pattern.compile("^bot (\\d+) ask (.*)");
     private static final Pattern BOTNR_SEND = Pattern.compile("^bot (\\d+) send (.*)");
     private static final Pattern BOTNR_WARNING = Pattern.compile("^bot (\\d+) warning (.*)");
@@ -91,7 +94,7 @@ public class EngineAPI {
     public void run() throws IOException {
 
         // Have engine set up game settings
-        if (!askAndExpect("initialize", "ok")) {
+        if (!askAndExpect("initialize", "ok", this.INITIAL_TIMEOUT)) {
             return;
         }
 
@@ -143,7 +146,7 @@ public class EngineAPI {
      */
     public String askGameDetails() {
         try {
-            return this.engine.ask("details");
+            return this.engine.ask("details", this.DEFAULT_TIMEOUT);
         } catch (IOException ex) {
             System.err.println(ex);
         }
@@ -159,7 +162,7 @@ public class EngineAPI {
      */
     public String askPlayedGame() {
         try {
-            return this.engine.ask("game");
+            return this.engine.ask("game", this.DEFAULT_TIMEOUT);
         } catch (IOException ex) {
             System.err.println(ex);
         }
@@ -224,8 +227,8 @@ public class EngineAPI {
      * @return True if expected answer was returned, false otherwise
      * @throws IOException
      */
-    private boolean askAndExpect(String message, String expected) throws IOException {
-        String response = this.engine.ask(message);
+    private boolean askAndExpect(String message, String expected, long timeout) throws IOException {
+        String response = this.engine.ask(message, timeout);
         if (!response.equals(expected)) {
             System.err.println(String.format("Unexpected response: %s\n to message: %s", response, message));
             return false;

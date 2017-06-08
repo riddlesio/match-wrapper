@@ -87,6 +87,10 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     @Override
     public void run() throws IOException {
         this.api = new EngineAPI(this.engine, this.players);
+
+        try {
+            Thread.sleep(500);
+        } catch (Exception ignored) {}
         this.api.run();
     }
 

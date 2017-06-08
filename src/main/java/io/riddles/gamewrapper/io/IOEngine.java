@@ -60,8 +60,8 @@ public class IOEngine extends IOWrapper {
      * @return Engine's response
      * @throws IOException exception
      */
-    public String ask(String message) throws IOException {
-        return super.ask(message, this.TIMEOUT);
+    public String ask(String message, long timeout) throws IOException {
+        return super.ask(message, timeout);
     }
     
     /**
