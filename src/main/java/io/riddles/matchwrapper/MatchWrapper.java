@@ -146,6 +146,12 @@ public class MatchWrapper implements Runnable {
         writer.write(result.toString());
         writer.close();
 
+        if (DEBUG) {
+            FileWriter gameWriter = new FileWriter("./game-resultfile.json");
+            gameWriter.write(result.getString("game"));
+            gameWriter.close();
+        }
+
         System.out.println("Finished writing to result.json");
     }
 }
