@@ -15,10 +15,10 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.matchwrapper;
+package io.riddles.gamewrapper;
 
-import io.riddles.matchwrapper.io.IOEngine;
-import io.riddles.matchwrapper.io.IOPlayer;
+import io.riddles.gamewrapper.io.IOEngine;
+import io.riddles.gamewrapper.io.IOPlayer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 /**
  * EngineAPI class
- *
+ * <p>
  * Handles all communication between the game wrapper and
  * the engine and bot processes
  *
@@ -55,7 +55,8 @@ public class EngineAPI {
      * message the engine sends.
      *
      * @param message Input from the engine
-     * @throws IOException exception
+     * @return Next engine message
+     * @throws IOException
      */
     public void handle(String message) throws IOException {
 
@@ -66,8 +67,8 @@ public class EngineAPI {
             return;
         }
 
-        // TODO: Make it possible to toggle verbose mode
-        // System.out.println(String.format("Received message: '%s'", message));
+//        // TODO: Make it possible to toggle verbose mode
+//        System.out.println(String.format("Received message: '%s'", message));
 
         if ((m = BOTNR_ASK.matcher(message)).find()) {
             this.engine.send(botAsk(Integer.parseInt(m.group(1)), m.group(2)));
@@ -87,6 +88,8 @@ public class EngineAPI {
 
     /**
      * Run a whole game
+     *
+     * @return The details of the game
      */
     public void run() throws IOException {
 
@@ -97,7 +100,7 @@ public class EngineAPI {
 
         System.out.println("Engine initialized. Sending settings to engine..");
         this.engine.sendPlayers(bots);
-        this.engine.sendConfiguration();
+
 
         System.out.println("Settings sent to engine. Sending settings to bots...");
         this.sendBotSettings();
@@ -186,6 +189,7 @@ public class EngineAPI {
      *
      * @param botIndex Bot to send to
      * @param message  Message to send
+     * @return False if message send failed, true otherwise
      * @throws IOException
      */
     private void botSend(int botIndex, String message) throws IOException {

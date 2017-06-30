@@ -15,12 +15,9 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.matchwrapper.io;
+package io.riddles.gamewrapper.io;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
-import io.riddles.matchwrapper.MatchWrapper;
 
 /**
  * IOPlayer class
@@ -39,7 +36,6 @@ public class IOPlayer extends IOWrapper {
     private int maxTimeouts;
     private StringBuilder dump;
     private int errorCounter;
-    private ArrayList<Long> responseTimes;
 
     private final String NULL_MOVE1 = "no_moves";
     private final String NULL_MOVE2 = "pass";
@@ -53,12 +49,12 @@ public class IOPlayer extends IOWrapper {
         this.maxTimeouts = maxTimeouts;
         this.dump = new StringBuilder();
         this.errorCounter = 0;
-        this.responseTimes = new ArrayList<>();
     }
  
     /**
      * Send line to bot
      * @param line Line to send
+     * @return True if write was successful, false otherwise
      */
     public void send(String line) {
         addToDump(line);
@@ -72,10 +68,9 @@ public class IOPlayer extends IOWrapper {
      * the bot's timebank into account
      * @param line Line to output
      * @return Bot's response
-     * @throws IOException exception
+     * @throws IOException
      */
     public String ask(String line) throws IOException {
-        this.response = null;
         send(String.format("%s %d", line, this.timebank));
         return getResponse();
     }
@@ -97,8 +92,6 @@ public class IOPlayer extends IOWrapper {
         String response = super.getResponse(this.timebank);
         
         long timeElapsed = System.currentTimeMillis() - startTime;
-
-        this.responseTimes.add(timeElapsed);
         updateTimeBank(timeElapsed);
 
         if (response.equalsIgnoreCase(NULL_MOVE1)) {
@@ -137,9 +130,7 @@ public class IOPlayer extends IOWrapper {
      * response
      */
     private void addError() {
-        this.errored = true;
         this.errorCounter++;
-
         if (this.errorCounter > this.maxTimeouts) {
             finish();
         }
@@ -148,16 +139,9 @@ public class IOPlayer extends IOWrapper {
     /**
      * Shuts down the bot
      */
-    public int finish() {
-        int exitStatus = super.finish();
-
-        if (!MatchWrapper.PROPAGATE_BOT_EXIT_CODE) {
-            exitStatus = 0;
-        }
-
+    public void finish() {
+        super.finish();
         System.out.println("Bot shut down.");
-
-        return exitStatus;
     }
     
     /**
@@ -184,7 +168,7 @@ public class IOPlayer extends IOWrapper {
      * @param dumpy String to add to the dump
      */
     public void addToDump(String dumpy) {
-        this.dump.append(dumpy).append("\n");
+        dump.append(dumpy + "\n");
     }
     
     /**
@@ -213,12 +197,5 @@ public class IOPlayer extends IOWrapper {
      */
     public long getTimePerMove() {
         return this.timePerMove;
-    }
-
-    /***
-     * @return A list with all response times
-     */
-    public ArrayList<Long> getResponseTimes() {
-        return this.responseTimes;
     }
 }

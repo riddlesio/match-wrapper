@@ -1,40 +1,17 @@
-// Copyright 2016 riddles.io (developers@riddles.io)
+package io.riddles.gamewrapper.runner;
 
-//    Licensed under the Apache License, Version 2.0 (the "License");
-//    you may not use this file except in compliance with the License.
-//    You may obtain a copy of the License at
-
-//        http://www.apache.org/licenses/LICENSE-2.0
-
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//    See the License for the specific language governing permissions and
-//    limitations under the License.
-//
-//    For the full copyright and license information, please view the LICENSE
-//    file that was distributed with this source code.
-
-package io.riddles.matchwrapper.runner;
-
-import io.riddles.matchwrapper.EngineAPI;
-import io.riddles.matchwrapper.io.IOEngine;
-import io.riddles.matchwrapper.io.IOPlayer;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+import io.riddles.gamewrapper.EngineAPI;
+import io.riddles.gamewrapper.io.IOEngine;
+import io.riddles.gamewrapper.io.IOPlayer;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 /**
- * MatchRunner class
- *
- * Handles the running of a match between one or more bots
- * and a game engine. Used for all types of matches on Riddles.io.
- *
- * @author Niko van Meurs <niko@riddles.io>, Jim van Eeden <jim@riddles.io>
+ * Created by niko on 26/05/16.
  */
 public class MatchRunner extends AbstractRunner implements Runnable, Reportable {
 
@@ -43,9 +20,11 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     private ArrayList<IOPlayer> players; // ArrayList containing player handlers
 
     public MatchRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
+
         super(timebankMax, timePerMove, maxTimeouts);
-        this.engine = null;
-        this.players = new ArrayList<>();
+
+        engine = null;
+        players = new ArrayList<>();
     }
 
     /**
@@ -53,7 +32,7 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
      * {
      *     engine: {
      *         command: String,
-     *         configuration: {
+     *         settings: {
      *
      *         }
      *     },
@@ -63,7 +42,7 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
      *         }
      *     ]
      * }
-     * @param config Matchrunner configuration
+     * @param config
      */
     @Override
     public void prepare(JSONObject config) {
@@ -91,51 +70,66 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
 
     @Override
     public void run() throws IOException {
-        this.api = new EngineAPI(this.engine, this.players);
-        this.api.run();
+        api = new EngineAPI(engine, players);
+        api.run();
     }
 
     @Override
-    public int postrun(long timeElapsed) {
-        setResults(createResults(timeElapsed));
+    public void postrun() {
+        setResults(createResults());
 
-        int playerStatusSum = this.players.stream().mapToInt(IOPlayer::finish).sum();
+        players.forEach(IOPlayer::finish);
 
-        int engineStatus = this.engine.finish();
-
-        return playerStatusSum + engineStatus > 0 ? 1 : 0;
+        System.out.println(engine.getStderr());
+        engine.finish();
     }
 
-    private JSONObject createResults(long timeElapsed) {
+
+
+    private JSONObject createResults() {
 
         JSONObject output = new JSONObject();
         JSONArray players = new JSONArray();
 
-        String details = this.api.askGameDetails();
-        String playedGame = this.api.askPlayedGame();
+        String details = api.askGameDetails();
+        String playedGame = api.askPlayedGame();
 
         for (IOPlayer player : this.players) {
 
             String log    = player.getDump();
             String errors = player.getStderr();
 
-            JSONArray responseTimes = new JSONArray(player.getResponseTimes());
-            long totalResponseTime = player.getResponseTimes().stream()
-                    .reduce(0L, (a, b) -> a + b);
-
             JSONObject playerOutput = new JSONObject();
             playerOutput.put("log", log);
             playerOutput.put("errors", errors);
-            playerOutput.put("responseTimes", responseTimes);
-            playerOutput.put("totalResponseTime", totalResponseTime);
 
             players.put(playerOutput);
         }
 
-        output.put("timeElapsed", timeElapsed);
         output.put("details", details);
         output.put("game", playedGame);
         output.put("players", players);
+
+        /* Modification by Joost */
+        output = new JSONObject();
+
+        JSONArray playerData = new JSONArray();
+
+
+        JSONObject player = new JSONObject();
+        player.put("name", "Henk");
+        player.put("emailHash", "123");
+
+        playerData.put(player);
+        playerData.put(player);
+
+
+        JSONObject playedGameObject = new JSONObject(playedGame);
+
+
+        output.put("playerData", playerData);
+
+        output.put("matchData", playedGameObject);
 
         return output;
     }
@@ -143,14 +137,14 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     private void printGame() {
 
         System.out.println("Bot data:");
-        for (IOPlayer bot : this.players) {
+        for (IOPlayer bot : players) {
             System.out.println(bot.getDump());
             System.out.println(bot.getStdout());
             System.out.println(bot.getStderr());
         }
         System.out.println("Engine data:");
-        System.out.println(this.engine.getStdout());
-        System.out.println(this.engine.getStderr());
+        System.out.println(engine.getStdout());
+        System.out.println(engine.getStderr());
     }
 
     private void prepareBot(JSONObject config) {
@@ -177,38 +171,35 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
 
         String command = config.getString("command");
 
-        JSONObject engineConfig;
         try {
-            engineConfig = config.getJSONObject("configuration");
-        } catch (JSONException e) {
-            engineConfig = new JSONObject();
-        }
-
-        try {
-            setEngine(command, engineConfig);
+            setEngine(command);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to start engine.");
         }
+
+        // TODO: send settings to engine
     }
 
     /**
      * Creates and starts player (bot) process and adds them
      * to player list
      * @param command Command to start process
-     * @throws IOException exception
+     * @throws IOException
      */
     private void addPlayer(String command) throws IOException {
-        int id = this.players.size();
-        this.players.add(createPlayer(command, id));
+        int id = players.size();
+        players.add(createPlayer(command, id));
     }
+
+
 
     /**
      * Creates and starts engine process
      * @param command Command to start process
-     * @throws IOException exception
+     * @throws IOException
      */
-    private void setEngine(String command, JSONObject engineConfig) throws IOException {
-        this.engine = createEngine(command, engineConfig);
+    private void setEngine(String command) throws IOException {
+        engine = createEngine(command);
     }
 }

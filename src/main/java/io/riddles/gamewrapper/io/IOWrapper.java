@@ -15,11 +15,11 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.matchwrapper.io;
+package io.riddles.gamewrapper.io;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.concurrent.ConcurrentLinkedQueue;;
+import java.util.Queue;
 
 /**
  * IOWrapper class
@@ -36,17 +36,15 @@ public class IOWrapper implements Runnable {
     private InputStreamGobbler outputGobbler;
     private InputStreamGobbler errorGobbler;
     protected boolean finished;
-    protected boolean errored;
     
     public String response;
-    public ConcurrentLinkedQueue<String> inputQueue;
+    public Queue<String> inputQueue;
     
     public IOWrapper(Process process) {
         this.inputStream = new OutputStreamWriter(process.getOutputStream());
         this.outputGobbler = new InputStreamGobbler(process.getInputStream(), this, "output");
         this.errorGobbler = new InputStreamGobbler(process.getErrorStream(), this, "error");
         this.process = process;
-        this.errored = false;
         this.finished = false;
     }
     
@@ -75,11 +73,9 @@ public class IOWrapper implements Runnable {
      * @param line Output line
      * @param timeout Time the process has to respond
      * @return Response from process
-     * @throws IOException exception
+     * @throws IOException
      */
     public String ask(String line, long timeout) throws IOException {
-        this.response = null;
-
         if (write(line)) {
             return getResponse(timeout);
         }
@@ -87,8 +83,7 @@ public class IOWrapper implements Runnable {
     }
 
     /**
-     * Waits until process returns a response and returns it. Only the
-     * first response after the request is processed, others are ignored.
+     * Waits until process returns a response and returns it
      * @param timeout Time before timeout
      * @return Process's response
      */
@@ -104,7 +99,9 @@ public class IOWrapper implements Runnable {
                 return handleResponseTimeout(timeout);
             }
 
-            try { Thread.sleep(2); } catch (InterruptedException ignored) {}
+            try { 
+                Thread.sleep(2);
+            } catch (InterruptedException e) {}
         }
         
         if (this.inputQueue != null) {
@@ -129,23 +126,20 @@ public class IOWrapper implements Runnable {
     /**
      * Ends the process and it's communication
      */
-    public int finish() {
-        if (this.finished) {
-            return this.errored ? 1 : 0;
-        }
+    protected void finish() {
+        if (this.finished)
+            return;
 
         // stop io streams
-        try { this.inputStream.close(); } catch (IOException ignored) {}
+        try { this.inputStream.close(); } catch (IOException e) {}
         this.outputGobbler.finish();
         this.errorGobbler.finish();
         
         // end the process
         this.process.destroy();
-        try { this.process.waitFor(); } catch (InterruptedException ignored) {}
+        try { this.process.waitFor(); } catch (InterruptedException ex) {}
 
         this.finished = true;
-
-        return this.errored ? 1 : 0;
     }
     
     /**
@@ -169,10 +163,10 @@ public class IOWrapper implements Runnable {
         return this.errorGobbler.getData();
     }
 
+    @Override
     /**
      * Start the communication with the process
      */
-    @Override
     public void run() {
         this.outputGobbler.start();
         this.errorGobbler.start();

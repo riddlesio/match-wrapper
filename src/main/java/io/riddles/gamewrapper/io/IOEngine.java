@@ -15,15 +15,11 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package io.riddles.matchwrapper.io;
-
-import org.json.JSONObject;
+package io.riddles.gamewrapper.io;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import io.riddles.matchwrapper.MatchWrapper;
+import java.util.LinkedList;
 
 /**
  * IOEngine class
@@ -36,12 +32,10 @@ import io.riddles.matchwrapper.MatchWrapper;
 public class IOEngine extends IOWrapper {
     
     private final long TIMEOUT = 2000; // 2 seconds
-    private JSONObject configuration;
 
-    public IOEngine(Process process, JSONObject configuration) {
+    public IOEngine(Process process) {
         super(process);
-        this.configuration = configuration;
-        this.inputQueue = new ConcurrentLinkedQueue<>();
+        this.inputQueue = new LinkedList<>();
     }
 
     /**
@@ -49,8 +43,9 @@ public class IOEngine extends IOWrapper {
      * @param message Message to send
      * @return True if write was successful, false otherwise
      */
-    public boolean send(String message) {
-        System.out.println(String.format("Engine in: '%s'", message));
+    public boolean send(String message) throws IOException {
+
+        System.out.println(String.format("Engine in: '%s''", message));
         return write(message);
     }
     
@@ -58,7 +53,7 @@ public class IOEngine extends IOWrapper {
      * Send line to engine and waits for response
      * @param message Message to send
      * @return Engine's response
-     * @throws IOException exception
+     * @throws IOException
      */
     public String ask(String message) throws IOException {
         return super.ask(message, this.TIMEOUT);
@@ -93,7 +88,7 @@ public class IOEngine extends IOWrapper {
             try { 
                 Thread.sleep(2);
             } catch (InterruptedException ignored) {}
-
+            
             message = this.inputQueue.poll();
         }
 
@@ -103,33 +98,23 @@ public class IOEngine extends IOWrapper {
         
         return message;
     }
-
+    
     /**
      * Shuts down the engine
      */
-    public int finish() {
-        int exitStatus = super.finish();
-
+    public void finish() {
+        super.finish();
         System.out.println("Engine shut down.");
-
-        if (MatchWrapper.DEBUG) {
-            printErrors();
-        }
-
-        return exitStatus;
     }
-
+    
     /**
      * Handles engine response time out
      * @param timeout Time before timeout
      * @return Empty string
      */
     protected String handleResponseTimeout(long timeout) {
+
         System.err.println(String.format("Engine took too long! (%dms)", this.TIMEOUT));
-        this.errored = true;
-        if (!MatchWrapper.DEBUG) {
-            printErrors();
-        }
         return "";
     }
     
@@ -146,17 +131,7 @@ public class IOEngine extends IOWrapper {
             message.append(String.format("%s%d", connector, i));
             connector = ",";
         }
-        return send(message.toString());
-    }
-
-    public boolean sendConfiguration() {
-        return send("configuration " + this.configuration.toString());
-    }
-
-    private void printErrors() {
-        System.err.println("ENGINE ERROR LOG:\n");
-        System.err.println(this.getStderr());
-        System.err.println("\nEND ENGINE ERROR LOG");
+        return write(message.toString());
     }
 }
 
