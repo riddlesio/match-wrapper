@@ -123,6 +123,9 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
         playerData.put(player);
         playerData.put(player);
 
+        System.out.println(playedGame);
+
+
 
         JSONObject playedGameObject = new JSONObject(playedGame);
 
