@@ -130,8 +130,8 @@ public class EngineAPI {
         botBroadcast(String.format("settings player_names %s", playerNames));
         for (IOPlayer bot : this.bots) {
             bot.send(String.format("settings your_bot player%d", bot.getId()));
-            bot.send(String.format("settings timebank %d", bot.getTimebankMax()));
-            bot.send(String.format("settings time_per_move %d", bot.getTimePerMove()));
+            bot.send(String.format("settings timebank %d", MatchWrapper.MAX_TIME_BANK));
+            bot.send(String.format("settings time_per_move %d", MatchWrapper.TIME_PER_MOVE));
         }
     }
 
@@ -227,7 +227,8 @@ public class EngineAPI {
     private boolean askAndExpect(String message, String expected) throws IOException {
         String response = this.engine.ask(message);
         if (!response.equals(expected)) {
-            System.err.println(String.format("Unexpected response: %s\n to message: %s", response, message));
+            System.err.println(String.format(
+                    "Unexpected response: %s\n to message: %s", response, message));
             return false;
         }
         return true;

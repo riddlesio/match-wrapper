@@ -17,7 +17,9 @@
 
 package io.riddles.matchwrapper.io;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import io.riddles.matchwrapper.MatchWrapper;
@@ -34,9 +36,6 @@ public class IOPlayer extends IOWrapper {
 
     private int id;
     private long timebank;
-    private long timebankMax;
-    private long timePerMove;
-    private int maxTimeouts;
     private StringBuilder dump;
     private int errorCounter;
     private ArrayList<Long> responseTimes;
@@ -44,13 +43,10 @@ public class IOPlayer extends IOWrapper {
     private final String NULL_MOVE1 = "no_moves";
     private final String NULL_MOVE2 = "pass";
 
-    public IOPlayer(Process process, int id, long timebankMax, long timePerMove, int maxTimeouts) {
+    public IOPlayer(Process process, int id) {
         super(process);
         this.id = id;
-        this.timebank = timebankMax;
-        this.timebankMax = timebankMax;
-        this.timePerMove = timePerMove;
-        this.maxTimeouts = maxTimeouts;
+        this.timebank = MatchWrapper.MAX_TIME_BANK;
         this.dump = new StringBuilder();
         this.errorCounter = 0;
         this.responseTimes = new ArrayList<>();
@@ -86,20 +82,21 @@ public class IOPlayer extends IOWrapper {
      */
     public String getResponse() {
         
-        if (this.errorCounter > this.maxTimeouts) {
+        if (this.errorCounter >= MatchWrapper.MAX_TIMEOUTS) {
             addToDump(String.format("Maximum number (%d) of time-outs reached: " +
-                    "skipping all moves.", this.maxTimeouts));
+                    "skipping all moves.", MatchWrapper.MAX_TIMEOUTS));
             return "null";
         }
 
         long startTime = System.currentTimeMillis();
-        
-        String response = super.getResponse(this.timebank);
-        
-        long timeElapsed = System.currentTimeMillis() - startTime;
 
+        String response = super.getResponse(this.timebank);
+
+        long timeElapsed = System.currentTimeMillis() - startTime;
         this.responseTimes.add(timeElapsed);
         updateTimeBank(timeElapsed);
+
+        processMemoryWarning();
 
         if (response.equalsIgnoreCase(NULL_MOVE1)) {
             botDump(NULL_MOVE1);
@@ -140,7 +137,7 @@ public class IOPlayer extends IOWrapper {
         this.errored = true;
         this.errorCounter++;
 
-        if (this.errorCounter > this.maxTimeouts) {
+        if (this.errorCounter > MatchWrapper.MAX_TIMEOUTS) {
             finish();
         }
     }
@@ -159,6 +156,38 @@ public class IOPlayer extends IOWrapper {
 
         return exitStatus;
     }
+
+    private void processMemoryWarning() {
+        if (MatchWrapper.MAX_MEMORY <= 0) return;
+
+        String memCommand = String.format("ps -o rss -p %d", this.pid);
+
+        try {
+            Process memProcess = Runtime.getRuntime().exec(memCommand);
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(memProcess.getInputStream()));
+
+            String line;
+            String memString = "0";
+            while ((line = reader.readLine()) != null) {
+                memString = line;
+            }
+
+            long memBytes = Long.parseLong(memString);
+            if (memBytes > MatchWrapper.MAX_MEMORY) {
+                addToDump(getMemoryWarning(memBytes / 1000, MatchWrapper.MAX_MEMORY / 1000));
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private String getMemoryWarning(long usedMemory, long maxMemory) {
+        return String.format(
+                "Warning: Your bot is using a lot of memory (%dMb), " +
+                "this might cause it to time out. Recommended maximum: %dMb",
+                usedMemory,
+                maxMemory
+        );
+    }
     
     /**
      * Updates the time bank for this player, cannot get bigger 
@@ -167,7 +196,8 @@ public class IOPlayer extends IOWrapper {
      */
     private void updateTimeBank(long timeElapsed) {
         this.timebank = Math.max(this.timebank - timeElapsed, 0);
-        this.timebank = Math.min(this.timebank + this.timePerMove, this.timebankMax);
+        this.timebank = Math.min(
+                this.timebank + MatchWrapper.TIME_PER_MOVE, MatchWrapper.MAX_TIME_BANK);
     }
 
     /**
@@ -199,20 +229,6 @@ public class IOPlayer extends IOWrapper {
      */
     public int getId() {
         return this.id;
-    }
-    
-    /**
-     * @return This bot's max timebank setting
-     */
-    public long getTimebankMax() {
-        return this.timebankMax;
-    }
-    
-    /**
-     * @return This bot's time per move setting
-     */
-    public long getTimePerMove() {
-        return this.timePerMove;
     }
 
     /***

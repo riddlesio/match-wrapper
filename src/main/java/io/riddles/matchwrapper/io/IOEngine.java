@@ -61,7 +61,7 @@ public class IOEngine extends IOWrapper {
      * @throws IOException exception
      */
     public String ask(String message) throws IOException {
-        return super.ask(message, this.TIMEOUT);
+        return super.ask(message, TIMEOUT);
     }
     
     /**
@@ -69,7 +69,7 @@ public class IOEngine extends IOWrapper {
      * @return Engine's response, returns and empty string when there is no response
      */
     public String getResponse() {
-        return super.getResponse(this.TIMEOUT);
+        return super.getResponse(TIMEOUT);
     }
     
     /**
@@ -86,8 +86,8 @@ public class IOEngine extends IOWrapper {
             long timeNow = System.currentTimeMillis();
             long timeElapsed = timeNow - timeStart;
             
-            if (timeElapsed >= this.TIMEOUT) {
-                return handleResponseTimeout(this.TIMEOUT);
+            if (timeElapsed >= TIMEOUT) {
+                return handleResponseTimeout(TIMEOUT);
             }
             
             try { 

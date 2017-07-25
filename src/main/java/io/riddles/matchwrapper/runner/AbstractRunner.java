@@ -32,22 +32,14 @@ import java.io.IOException;
  */
 public abstract class AbstractRunner implements Reportable {
 
-    private Long timebankMax;
-    private Long timePerMove;
-    private int maxTimeouts;
     private JSONObject results;
 
-    public AbstractRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
-        this.timebankMax = timebankMax;
-        this.timePerMove = timePerMove;
-        this.maxTimeouts = maxTimeouts;
-
+    public AbstractRunner() {
         this.results = new JSONObject();
     }
 
     protected IOPlayer createPlayer(String command, int id) throws IOException {
-        IOPlayer player = new IOPlayer(
-                wrapCommand(command), id, this.timebankMax, this.timePerMove, this.maxTimeouts);
+        IOPlayer player = new IOPlayer(wrapCommand(command), id);
         player.run();
 
         return player;

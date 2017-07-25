@@ -40,10 +40,10 @@ public class MatchWrapper implements Runnable {
 
     public static boolean DEBUG = false;
     public static boolean PROPAGATE_BOT_EXIT_CODE = false; // when true: if a bot crashes, wrapper exits with code 1
-
-    private long timebankMax = 10000L; // 10 seconds default
-    private long timePerMove = 500L; // 0,5 seconds default
-    private int maxTimeouts = 2; // 2 timeouts default before shutdown
+    public static long MAX_TIME_BANK = 10000L; // 10 seconds default
+    public static long TIME_PER_MOVE = 500L; // 0,5 seconds default
+    public static int MAX_TIMEOUTS = 0; // 0 timeouts default before shutdown
+    public static long MAX_MEMORY = 250000; // over 250MB triggers warning
     private String resultFilePath;
     private Runnable runner;
 
@@ -79,10 +79,10 @@ public class MatchWrapper implements Runnable {
 
         if (config.has("match")) {
             runnerConfig = config.getJSONObject("match");
-            this.runner = new MatchRunner(this.timebankMax, this.timePerMove, this.maxTimeouts);
+            this.runner = new MatchRunner();
         } else if (config.has("scenario")) {
             runnerConfig = config.getJSONObject("scenario");
-            this.runner = new ScenarioRunner(this.timebankMax, this.timePerMove, this.maxTimeouts);
+            this.runner = new ScenarioRunner();
         } else {
             throw new RuntimeException("Config does not contain either match or scenario");
         }
@@ -100,15 +100,19 @@ public class MatchWrapper implements Runnable {
         JSONObject wrapperConfig = config.getJSONObject("wrapper");
 
         if (wrapperConfig.has("timebankMax")) {
-            this.timebankMax = wrapperConfig.getLong("timebankMax");
+            MAX_TIME_BANK = wrapperConfig.getLong("timebankMax");
         }
 
         if (wrapperConfig.has("timePerMove")) {
-            this.timePerMove = wrapperConfig.getLong("timePerMove");
+            TIME_PER_MOVE = wrapperConfig.getLong("timePerMove");
         }
 
         if (wrapperConfig.has("maxTimeouts")) {
-            this.maxTimeouts = wrapperConfig.getInt("maxTimeouts");
+            MAX_TIMEOUTS = wrapperConfig.getInt("maxTimeouts");
+        }
+
+        if (wrapperConfig.has("maxMemory")) {
+            MAX_MEMORY = wrapperConfig.getLong("maxMemory");
         }
 
         if (wrapperConfig.has("debug")) {

@@ -19,6 +19,7 @@ package io.riddles.matchwrapper.io;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentLinkedQueue;;
 
 /**
@@ -35,6 +36,7 @@ public class IOWrapper implements Runnable {
     private OutputStreamWriter inputStream;
     private InputStreamGobbler outputGobbler;
     private InputStreamGobbler errorGobbler;
+    protected long pid = -1;
     protected boolean finished;
     protected boolean errored;
     
@@ -48,6 +50,18 @@ public class IOWrapper implements Runnable {
         this.process = process;
         this.errored = false;
         this.finished = false;
+
+        setPid();
+    }
+
+    private synchronized void setPid() {
+        try {
+            Field field = this.process.getClass().getDeclaredField("pid");
+            field.setAccessible(true);
+            this.pid = field.getLong(this.process);
+            field.setAccessible(false);
+        }
+        catch (Exception ignored) {}
     }
     
     /**

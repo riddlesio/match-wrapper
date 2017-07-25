@@ -41,8 +41,8 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     private String subjectType;
     private JSONArray scenario;
 
-    public ScenarioRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
-        super(timebankMax, timePerMove, maxTimeouts);
+    public ScenarioRunner() {
+        super();
     }
 
     @Override

@@ -42,8 +42,8 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     private IOEngine engine;
     private ArrayList<IOPlayer> players; // ArrayList containing player handlers
 
-    public MatchRunner(Long timebankMax, Long timePerMove, int maxTimeouts) {
-        super(timebankMax, timePerMove, maxTimeouts);
+    public MatchRunner() {
+        super();
         this.engine = null;
         this.players = new ArrayList<>();
     }
