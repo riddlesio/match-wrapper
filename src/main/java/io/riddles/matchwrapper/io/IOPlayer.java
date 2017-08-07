@@ -56,13 +56,17 @@ public class IOPlayer extends IOWrapper {
      * Send line to bot
      * @param line Line to send
      */
-    public void send(String line) {
+    public boolean send(String line) {
         addToDump(line);
+
         if (!super.write(line) && !this.finished) {
             addToDump("Write to bot failed, shutting down...");
+            return false;
         }
+
+        return true;
     }
-    
+
     /**
      * Send line to bot and waits for response taking
      * the bot's timebank into account
@@ -71,8 +75,14 @@ public class IOPlayer extends IOWrapper {
      * @throws IOException exception
      */
     public String ask(String line) throws IOException {
+        return this.ask(line, this.timebank);
+    }
+
+    public String ask(String line, long timeout) throws IOException {
         this.response = null;
-        send(String.format("%s %d", line, this.timebank));
+
+        send(String.format("%s %d", line, timeout));
+
         return getResponse();
     }
 
@@ -82,7 +92,7 @@ public class IOPlayer extends IOWrapper {
      */
     public String getResponse() {
         
-        if (this.errorCounter >= MatchWrapper.MAX_TIMEOUTS) {
+        if (this.errorCounter > MatchWrapper.MAX_TIMEOUTS) {
             addToDump(String.format("Maximum number (%d) of time-outs reached: " +
                     "skipping all moves.", MatchWrapper.MAX_TIMEOUTS));
             return "null";

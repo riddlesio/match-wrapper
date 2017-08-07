@@ -56,20 +56,20 @@ public class IOEngine extends IOWrapper {
     
     /**
      * Send line to engine and waits for response
-     * @param message Message to send
+     * @param line Message to send
      * @return Engine's response
      * @throws IOException exception
      */
-    public String ask(String message) throws IOException {
-        return super.ask(message, TIMEOUT);
+    public String ask(String line) throws IOException {
+        return this.ask(line, TIMEOUT);
     }
-    
-    /**
-     * Waits until engine returns a response and returns it
-     * @return Engine's response, returns and empty string when there is no response
-     */
-    public String getResponse() {
-        return super.getResponse(TIMEOUT);
+
+    public String ask(String line, long timeout) throws IOException {
+        this.response = null;
+
+        send(line);
+
+        return getResponse(timeout);
     }
     
     /**
@@ -142,10 +142,12 @@ public class IOEngine extends IOWrapper {
         StringBuilder message = new StringBuilder();
         message.append("bot_ids ");
         String connector = "";
+
         for (int i=0; i < bots.size(); i++) {
             message.append(String.format("%s%d", connector, i));
             connector = ",";
         }
+
         return send(message.toString());
     }
 

@@ -79,7 +79,7 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
                 String action = this.scenario.getString(i);
 
                 if (i + 1 < scenarioSize) {
-                    this.subject.write(action);
+                    this.subject.send(action);
                 } else {
                     String response = this.subject.ask(action, timeout);
 

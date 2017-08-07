@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;;
  * 
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@starapple.nl>
  */
-public class IOWrapper implements Runnable {
+public abstract class IOWrapper implements Runnable {
     
     private Process process;
     private OutputStreamWriter inputStream;
@@ -63,6 +63,10 @@ public class IOWrapper implements Runnable {
         }
         catch (Exception ignored) {}
     }
+
+    public abstract boolean send(String line);
+
+    public abstract String ask(String line, long timeout) throws IOException;
     
     /**
      * Sends a line to the process
@@ -82,22 +86,6 @@ public class IOWrapper implements Runnable {
         }
 
         return true;
-    }
-
-    /**
-     * Sends a line to the process and gets response
-     * @param line Output line
-     * @param timeout Time the process has to respond
-     * @return Response from process
-     * @throws IOException exception
-     */
-    public String ask(String line, long timeout) throws IOException {
-        this.response = null;
-
-        if (write(line)) {
-            return getResponse(timeout);
-        }
-        return "";
     }
 
     /**

@@ -5,7 +5,7 @@
   },
   "scenario": {
     "subject": {
-      "command": "java -jar /home/jim/workspace/fourinarow-starterbot-java/build/libs/fourinarow-starterbot-java-2.0.0.jar",
+      "command": "java -jar /home/jim/workspace/lightriders-starterbot-java/build/libs/lightriders-starterbot-java-1.0.0.jar",
       "type": "bot"
     },
     "scenario": [
@@ -14,10 +14,10 @@
       "settings timebank 5000",
       "settings time_per_move 200",
       "settings your_botid 0",
-      "settings field_width 7",
-      "settings field_height 6",
-      "update game round 1",
-      "update game field .,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.",
+      "settings field_width 16",
+      "settings field_height 16",
+      "update game round 0",
+      "update game field .,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,0,.,.,.,.,.,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.",
       "action move 5000"
     ]
   }
