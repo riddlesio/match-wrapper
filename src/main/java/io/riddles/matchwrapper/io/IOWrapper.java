@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;;
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@starapple.nl>
  */
 public abstract class IOWrapper implements Runnable {
-    
+
     private Process process;
     private OutputStreamWriter inputStream;
     private InputStreamGobbler outputGobbler;
@@ -39,6 +39,7 @@ public abstract class IOWrapper implements Runnable {
     protected long pid = -1;
     protected boolean finished;
     protected boolean errored;
+    protected long timebank;
     
     public String response;
     public ConcurrentLinkedQueue<String> inputQueue;
@@ -66,7 +67,7 @@ public abstract class IOWrapper implements Runnable {
 
     public abstract boolean send(String line);
 
-    public abstract String ask(String line, long timeout) throws IOException;
+    public abstract String ask(String line) throws IOException;
     
     /**
      * Sends a line to the process
@@ -178,5 +179,9 @@ public abstract class IOWrapper implements Runnable {
     public void run() {
         this.outputGobbler.start();
         this.errorGobbler.start();
+    }
+
+    public void setTimebank(long timebank) {
+        this.timebank = timebank;
     }
 }

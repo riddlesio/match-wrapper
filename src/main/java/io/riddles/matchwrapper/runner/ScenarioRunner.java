@@ -17,6 +17,7 @@
 
 package io.riddles.matchwrapper.runner;
 
+import io.riddles.matchwrapper.io.IOEngine;
 import io.riddles.matchwrapper.io.IOPlayer;
 import io.riddles.matchwrapper.io.IOWrapper;
 import org.json.JSONArray;
@@ -63,6 +64,7 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
                 } catch (JSONException ignored) {}
 
                 this.subject = createEngine(subjectCommand, engineConfig);
+
                 return;
         }
 
@@ -81,7 +83,10 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
                 if (i + 1 < scenarioSize) {
                     this.subject.send(action);
                 } else {
-                    String response = this.subject.ask(action, timeout);
+                    action = removeTimeFromAction(action);
+
+                    this.subject.setTimebank(timeout);
+                    String response = this.subject.ask(action);
 
                     if (response.isEmpty()) {
                         throw new IOException(String.format("Response timed out (%dms)", timeout));
@@ -116,6 +121,24 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
 
         System.err.println("Failed to read timebank from scenario");
         return 2000L;
+    }
+
+    // Time gets added by the line 'settings timebank [milliseconds]'
+    // in the IOPlayer/IOEngine, so removed here
+    private String removeTimeFromAction(String action) {
+        String[] split = action.split(" ");
+
+        if (split.length != 3) {
+            return action;
+        }
+
+        try {
+            Integer.parseInt(split[2]);
+        } catch (Exception ignored) {
+            return action;
+        }
+
+        return String.format("%s %s", split[0], split[1]);
     }
 
     private JSONObject createSuccessResult() {

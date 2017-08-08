@@ -35,7 +35,6 @@ import io.riddles.matchwrapper.MatchWrapper;
 public class IOPlayer extends IOWrapper {
 
     private int id;
-    private long timebank;
     private StringBuilder dump;
     private int errorCounter;
     private ArrayList<Long> responseTimes;
@@ -75,13 +74,9 @@ public class IOPlayer extends IOWrapper {
      * @throws IOException exception
      */
     public String ask(String line) throws IOException {
-        return this.ask(line, this.timebank);
-    }
-
-    public String ask(String line, long timeout) throws IOException {
         this.response = null;
 
-        send(String.format("%s %d", line, timeout));
+        send(String.format("%s %d", line, this.timebank));
 
         return getResponse();
     }

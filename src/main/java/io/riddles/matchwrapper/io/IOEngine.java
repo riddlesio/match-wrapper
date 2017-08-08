@@ -34,12 +34,12 @@ import io.riddles.matchwrapper.MatchWrapper;
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@starapple.nl>
  */
 public class IOEngine extends IOWrapper {
-    
-    private final long TIMEOUT = 2000; // 2 seconds
+
     private JSONObject configuration;
 
     public IOEngine(Process process, JSONObject configuration) {
         super(process);
+        this.timebank = 2000;  // 2 seconds
         this.configuration = configuration;
         this.inputQueue = new ConcurrentLinkedQueue<>();
     }
@@ -61,15 +61,11 @@ public class IOEngine extends IOWrapper {
      * @throws IOException exception
      */
     public String ask(String line) throws IOException {
-        return this.ask(line, TIMEOUT);
-    }
-
-    public String ask(String line, long timeout) throws IOException {
         this.response = null;
 
         send(line);
 
-        return getResponse(timeout);
+        return getResponse(this.timebank);
     }
     
     /**
@@ -86,8 +82,8 @@ public class IOEngine extends IOWrapper {
             long timeNow = System.currentTimeMillis();
             long timeElapsed = timeNow - timeStart;
             
-            if (timeElapsed >= TIMEOUT) {
-                return handleResponseTimeout(TIMEOUT);
+            if (timeElapsed >= this.timebank) {
+                return handleResponseTimeout(this.timebank);
             }
             
             try { 
@@ -125,7 +121,7 @@ public class IOEngine extends IOWrapper {
      * @return Empty string
      */
     protected String handleResponseTimeout(long timeout) {
-        System.err.println(String.format("Engine took too long! (%dms)", this.TIMEOUT));
+        System.err.println(String.format("Engine took too long! (%dms)", this.timebank));
         this.errored = true;
         if (!MatchWrapper.DEBUG) {
             printErrors();
