@@ -17,7 +17,6 @@
 
 package io.riddles.matchwrapper.runner;
 
-import io.riddles.matchwrapper.io.IOEngine;
 import io.riddles.matchwrapper.io.IOPlayer;
 import io.riddles.matchwrapper.io.IOWrapper;
 import org.json.JSONArray;
@@ -78,12 +77,15 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
 
         try {
             for (int i = 0; i < scenarioSize; i++) {
-                String action = this.scenario.getString(i);
+                String line = this.scenario.getString(i);
 
-                if (i + 1 < scenarioSize) {
-                    this.subject.send(action);
+                if (line.length() <= 0) continue;
+
+                String[] split = line.split(" ");
+                if (!split[0].equals("action")) {
+                    this.subject.send(line);
                 } else {
-                    action = removeTimeFromAction(action);
+                    String action = removeTimeFromAction(line);
 
                     this.subject.setTimebank(timeout);
                     String response = this.subject.ask(action);
