@@ -108,9 +108,7 @@ public class IOEngine extends IOWrapper {
 
         System.out.println("Engine shut down.");
 
-        if (MatchWrapper.DEBUG) {
-            printErrors();
-        }
+        printErrors();
 
         return exitStatus;
     }
@@ -123,9 +121,6 @@ public class IOEngine extends IOWrapper {
     protected String handleResponseTimeout(long timeout) {
         System.err.println(String.format("Engine took too long! (%dms)", this.timebank));
         this.errored = true;
-        if (!MatchWrapper.DEBUG) {
-            printErrors();
-        }
         return "";
     }
     
@@ -152,9 +147,9 @@ public class IOEngine extends IOWrapper {
     }
 
     private void printErrors() {
-        System.err.println("ENGINE ERROR LOG:\n");
-        System.err.println(this.getStderr());
-        System.err.println("\nEND ENGINE ERROR LOG");
+        System.out.println("ENGINE ERROR LOG:\n");
+        System.out.println(this.getStderr());
+        System.out.println("\nEND ENGINE ERROR LOG");
     }
 }
 
