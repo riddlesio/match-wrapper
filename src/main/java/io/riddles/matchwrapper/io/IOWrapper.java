@@ -20,7 +20,8 @@ package io.riddles.matchwrapper.io;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
-import java.util.concurrent.ConcurrentLinkedQueue;;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;;
 
 /**
  * IOWrapper class
@@ -96,12 +97,11 @@ public abstract class IOWrapper implements Runnable {
      * @return Process's response
      */
     public String getResponse(long timeout) {
-        long timeStart = System.currentTimeMillis();
+        long timeStart = System.nanoTime();
         String response;
 
         while (this.response == null) {
-            long timeNow = System.currentTimeMillis();
-            long timeElapsed = timeNow - timeStart;
+            long timeElapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - timeStart);
             
             if (timeElapsed >= timeout) {
                 return handleResponseTimeout(timeout);

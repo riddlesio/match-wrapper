@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * MatchWrapper class
@@ -48,7 +49,7 @@ public class MatchWrapper implements Runnable {
     private Runnable runner;
 
     public static void main(String[] args) throws IOException {
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
 
         JSONObject config;
         MatchWrapper game = new MatchWrapper();
@@ -63,7 +64,7 @@ public class MatchWrapper implements Runnable {
         System.out.println("Starting...");
         game.run();
 
-        long timeElapsed = System.currentTimeMillis() - startTime;
+        long timeElapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
 
         System.out.println("Stopping...");
         int exitStatus = game.postrun(timeElapsed);

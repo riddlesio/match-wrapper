@@ -22,8 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import io.riddles.matchwrapper.MatchWrapper;
+import java.util.concurrent.TimeUnit;
 
 /**
  * IOEngine class
@@ -75,12 +74,11 @@ public class IOEngine extends IOWrapper {
      * @return Message from the engine, empty string if timeout
      */
     public String getMessage() {
-        long timeStart = System.currentTimeMillis();
+        long timeStart = System.nanoTime();
         String message = this.inputQueue.poll();
         
         while (message == null) {
-            long timeNow = System.currentTimeMillis();
-            long timeElapsed = timeNow - timeStart;
+            long timeElapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - timeStart);
             
             if (timeElapsed >= this.timebank) {
                 return handleResponseTimeout(this.timebank);

@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import io.riddles.matchwrapper.MatchWrapper;
 
@@ -93,11 +94,11 @@ public class IOPlayer extends IOWrapper {
             return "null";
         }
 
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
 
         String response = super.getResponse(this.timebank);
 
-        long timeElapsed = System.currentTimeMillis() - startTime;
+        long timeElapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
         this.responseTimes.add(timeElapsed);
         updateTimeBank(timeElapsed);
 
