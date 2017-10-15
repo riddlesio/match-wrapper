@@ -19,6 +19,8 @@ package io.riddles.matchwrapper.runner;
 
 import io.riddles.matchwrapper.io.IOEngine;
 import io.riddles.matchwrapper.io.IOPlayer;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -45,8 +47,22 @@ public abstract class AbstractRunner implements Reportable {
         return player;
     }
 
+    protected IOPlayer createPlayer(String[] commandParts, int id) throws IOException {
+        IOPlayer player = new IOPlayer(wrapCommand(commandParts), id);
+        player.run();
+
+        return player;
+    }
+
     protected IOEngine createEngine(String command, JSONObject engineConfig) throws IOException {
         IOEngine engine = new IOEngine(wrapCommand(command), engineConfig);
+        engine.run();
+
+        return engine;
+    }
+
+    protected IOEngine createEngine(String[] commandParts, JSONObject engineConfig) throws IOException {
+        IOEngine engine = new IOEngine(wrapCommand(commandParts), engineConfig);
         engine.run();
 
         return engine;
@@ -65,6 +81,37 @@ public abstract class AbstractRunner implements Reportable {
     private Process wrapCommand(String command) throws IOException {
         System.out.println("executing: " + command);
         return Runtime.getRuntime().exec(command);
+    }
+
+    /**
+     * Execute command parts as a process
+     * @param commandParts Command parts to start process
+     * @return The started processs
+     * @throws IOException exception
+     */
+    private Process wrapCommand(String[] commandParts) throws IOException {
+        System.out.println("executing: [\"" + String.join("\", \"", commandParts) + "\"]");
+        return Runtime.getRuntime().exec(commandParts);
+    }
+
+    protected boolean commandIsString(JSONObject config) {
+        try {
+            config.getString("command");
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
+    protected String[] jsonArrayToStringArray(JSONArray arr) {
+        int length = arr.length();
+        String[] items = new String[length];
+
+        for (int i = 0; i < length; i++) {
+            items[i] = arr.getString(i);
+        }
+
+        return items;
     }
 
     @Override
