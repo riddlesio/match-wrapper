@@ -11,7 +11,7 @@
 //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //    See the License for the specific language governing permissions and
 //    limitations under the License.
-//  
+//
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
@@ -26,10 +26,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * IOEngine class
- * 
+ *
  * Extends IOWrapper class by adding stuff specifically
  * for engine processes
- * 
+ *
  * @author Sid Mijnders <sid@riddles.io>, Jim van Eeden <jim@starapple.nl>
  */
 public class IOEngine extends IOWrapper {
@@ -38,7 +38,7 @@ public class IOEngine extends IOWrapper {
 
     public IOEngine(Process process, JSONObject configuration) {
         super(process);
-        this.timebank = 2000;  // 2 seconds
+        this.timebank = 10000;  // 10 seconds
         this.configuration = configuration;
         this.inputQueue = new ConcurrentLinkedQueue<>();
     }
@@ -52,7 +52,7 @@ public class IOEngine extends IOWrapper {
         System.out.println(String.format("Engine in: '%s'", message));
         return write(message);
     }
-    
+
     /**
      * Send line to engine and waits for response
      * @param line Message to send
@@ -66,7 +66,7 @@ public class IOEngine extends IOWrapper {
 
         return getResponse(this.timebank);
     }
-    
+
     /**
      * Waits until the engine returns one or multiple messages
      * and returns the first given, returns empty string if there
@@ -76,15 +76,15 @@ public class IOEngine extends IOWrapper {
     public String getMessage() {
         long timeStart = System.nanoTime();
         String message = this.inputQueue.poll();
-        
+
         while (message == null) {
             long timeElapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - timeStart);
-            
+
             if (timeElapsed >= this.timebank) {
                 return handleResponseTimeout(this.timebank);
             }
-            
-            try { 
+
+            try {
                 Thread.sleep(2);
             } catch (InterruptedException ignored) {}
 
@@ -94,7 +94,7 @@ public class IOEngine extends IOWrapper {
         this.response = null;
 
         System.out.println(String.format("Engine out: '%s'", message));
-        
+
         return message;
     }
 
@@ -121,7 +121,7 @@ public class IOEngine extends IOWrapper {
         this.errored = true;
         return "";
     }
-    
+
     /**
      * Sends the bot IDs to the engine
      * @param bots All the bots for this game
