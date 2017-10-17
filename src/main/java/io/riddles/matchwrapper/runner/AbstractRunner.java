@@ -103,12 +103,12 @@ public abstract class AbstractRunner implements Reportable {
         }
     }
 
-    protected String[] jsonArrayToStringArray(JSONArray arr) {
-        int length = arr.length();
+    protected String[] jsonArrayToStringArray(JSONArray array) {
+        int length = array.length();
         String[] items = new String[length];
 
         for (int i = 0; i < length; i++) {
-            items[i] = arr.getString(i);
+            items[i] = array.getString(i);
         }
 
         return items;

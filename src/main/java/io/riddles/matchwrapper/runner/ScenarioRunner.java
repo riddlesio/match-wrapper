@@ -50,9 +50,13 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
         this.scenario = config.getJSONArray("scenario");
         JSONObject subjectConfig = config.getJSONObject("subject");
 
-        boolean commandIsString = commandIsString(subjectConfig);
-        String subjectCommand = commandIsString ? subjectConfig.getString("command") : null;
-        String[] subjectCommandParts = commandIsString ? null : jsonArrayToStringArray(subjectConfig.getJSONArray("command"));
+        String subjectCommand = null;
+        String[] subjectCommandParts = null;
+        if (commandIsString(subjectConfig)) {
+            subjectCommand = subjectConfig.getString("command");
+        } else {
+            subjectCommandParts = jsonArrayToStringArray(subjectConfig.getJSONArray("command"));
+        }
 
         this.subjectType = subjectConfig.getString("type");
 

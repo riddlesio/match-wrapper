@@ -156,34 +156,26 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     private void prepareBot(JSONObject config) {
 
         if (!config.has("command")) {
-            throw new RuntimeException("No command specified for engine");
+            throw new RuntimeException("No command specified for bot.");
         }
 
-        boolean commandIsString = commandIsString(config);
-        String command = commandIsString ? config.getString("command") : null;
-        String[] commandParts = commandIsString ? null : jsonArrayToStringArray(config.getJSONArray("command"));
-
         try {
-            if (command != null) {
-                addPlayer(command);
+            if (commandIsString(config)) {
+                addPlayer(config.getString("command"));
             } else {
-                addPlayer(commandParts);
+                addPlayer(jsonArrayToStringArray(config.getJSONArray("command")));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Failed to start engine.");
+            throw new RuntimeException("Failed to start bot.");
         }
     }
 
     private void prepareEngine(JSONObject config) {
 
         if (!config.has("command")) {
-            throw new RuntimeException("No command specified for engine");
+            throw new RuntimeException("No command specified for engine.");
         }
-
-        boolean commandIsString = commandIsString(config);
-        String command = commandIsString ? config.getString("command") : null;
-        String[] commandParts = commandIsString ? null : jsonArrayToStringArray(config.getJSONArray("command"));
 
         JSONObject engineConfig;
         try {
@@ -193,10 +185,10 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
         }
 
         try {
-            if (command != null) {
-                setEngine(command, engineConfig);
+            if (commandIsString(config)) {
+                setEngine(config.getString("command"), engineConfig);
             } else {
-                setEngine(commandParts, engineConfig);
+                setEngine(jsonArrayToStringArray(config.getJSONArray("command")), engineConfig);
             }
         } catch (Exception e) {
             e.printStackTrace();
