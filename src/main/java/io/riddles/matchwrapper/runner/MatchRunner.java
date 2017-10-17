@@ -156,26 +156,26 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     private void prepareBot(JSONObject config) {
 
         if (!config.has("command")) {
-            throw new RuntimeException("No command specified for engine");
+            throw new RuntimeException("No command specified for bot.");
         }
 
-        String command = config.getString("command");
-
         try {
-            addPlayer(command);
+            if (commandIsString(config)) {
+                addPlayer(config.getString("command"));
+            } else {
+                addPlayer(jsonArrayToStringArray(config.getJSONArray("command")));
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Failed to start engine.");
+            throw new RuntimeException("Failed to start bot.");
         }
     }
 
     private void prepareEngine(JSONObject config) {
 
         if (!config.has("command")) {
-            throw new RuntimeException("No command specified for engine");
+            throw new RuntimeException("No command specified for engine.");
         }
-
-        String command = config.getString("command");
 
         JSONObject engineConfig;
         try {
@@ -185,7 +185,11 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
         }
 
         try {
-            setEngine(command, engineConfig);
+            if (commandIsString(config)) {
+                setEngine(config.getString("command"), engineConfig);
+            } else {
+                setEngine(jsonArrayToStringArray(config.getJSONArray("command")), engineConfig);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to start engine.");
@@ -204,11 +208,31 @@ public class MatchRunner extends AbstractRunner implements Runnable, Reportable 
     }
 
     /**
+     * Creates and starts player (bot) process and adds them
+     * to player list
+     * @param commandParts Command parts to start process
+     * @throws IOException exception
+     */
+    private void addPlayer(String[] commandParts) throws IOException {
+        int id = this.players.size();
+        this.players.add(createPlayer(commandParts, id));
+    }
+
+    /**
      * Creates and starts engine process
      * @param command Command to start process
      * @throws IOException exception
      */
     private void setEngine(String command, JSONObject engineConfig) throws IOException {
         this.engine = createEngine(command, engineConfig);
+    }
+
+    /**
+     * Creates and starts engine process
+     * @param commandParts Command parts to start process
+     * @throws IOException exception
+     */
+    private void setEngine(String[] commandParts, JSONObject engineConfig) throws IOException {
+        this.engine = createEngine(commandParts, engineConfig);
     }
 }

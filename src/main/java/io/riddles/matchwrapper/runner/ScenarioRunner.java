@@ -49,12 +49,24 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
     public void prepare(JSONObject config) throws IOException {
         this.scenario = config.getJSONArray("scenario");
         JSONObject subjectConfig = config.getJSONObject("subject");
-        String subjectCommand = subjectConfig.getString("command");
+
+        String subjectCommand = null;
+        String[] subjectCommandParts = null;
+        if (commandIsString(subjectConfig)) {
+            subjectCommand = subjectConfig.getString("command");
+        } else {
+            subjectCommandParts = jsonArrayToStringArray(subjectConfig.getJSONArray("command"));
+        }
+
         this.subjectType = subjectConfig.getString("type");
 
         switch (this.subjectType) {
             case "bot":
-                this.subject = createPlayer(subjectCommand, 0);
+                if (subjectCommand != null) {
+                    this.subject = createPlayer(subjectCommand, 0);
+                } else {
+                    this.subject = createPlayer(subjectCommandParts, 0);
+                }
                 return;
             case "engine":
                 JSONObject engineConfig = new JSONObject();
@@ -62,7 +74,11 @@ public class ScenarioRunner extends AbstractRunner implements Runnable, Reportab
                     engineConfig = subjectConfig.getJSONObject("configuration");
                 } catch (JSONException ignored) {}
 
-                this.subject = createEngine(subjectCommand, engineConfig);
+                if (subjectCommand != null) {
+                    this.subject = createEngine(subjectCommand, engineConfig);
+                } else {
+                    this.subject = createEngine(subjectCommandParts, engineConfig);
+                }
 
                 return;
         }

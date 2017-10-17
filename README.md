@@ -61,9 +61,10 @@ Example wrapper commands:
   - **debug** If true, will print the engine error streams.
 - **match** Configuration for the match processes
   - **bots** An array with all bot configurations
-    - **command** The command to start the bot process. Can be any command; if it works in your console, it should work here.
+    - **command** The command to start the bot process. Can be any command; if it works in your console, it should work here. If your command contains a path with spaces, enter it as an array as follows:  
+    `"command": "java -jar \"/home/me/My Projects/bot.jar\""` => `"command": ["java", "-jar", "/home/me/My Projects/bot.jar"]`
   - **engine** Configuration for the engine process
-    - **command** The command to start the engine process.
+    - **command** The command to start the engine process. Paths with spaces need to be entered as above.
     - **configuration** Any configuration you might want to send to the game engine.
     
 The configuration for most current Riddles.io (java) game engines looks like this (example):
