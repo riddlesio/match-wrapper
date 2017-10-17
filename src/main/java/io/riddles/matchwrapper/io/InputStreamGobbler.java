@@ -31,6 +31,8 @@ import java.io.InputStreamReader;
  * @author Jim van Eeden <jim@riddles.io>
  */
 public class InputStreamGobbler extends Thread {
+
+    private final long BUFFER_LIMIT = 1000000; // 1 Mb
     
     private InputStream inputStream;
     private IOWrapper wrapper;
@@ -57,7 +59,20 @@ public class InputStreamGobbler extends Thread {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
             while (!this.finished && (lastLine = bufferedReader.readLine()) != null) {
-                if (this.buffer.length() > 1000000) break; //catches bots that return way too much (infinite loop)
+
+                // Catches bots that return way too much (infinite loop)
+                if (this.buffer.length() >= BUFFER_LIMIT) {
+                    String message = String.format(
+                            "... %s limit of %s Mb reached. " +
+                            "Processing of stream stopped.",
+                            this.type,
+                            BUFFER_LIMIT / 1000000
+                    );
+
+                    this.buffer.append(message);
+                    finish();
+                    break;
+                }
 
                 if (this.type.equals("output")) {
                    this.wrapper.response = lastLine;
@@ -65,6 +80,7 @@ public class InputStreamGobbler extends Thread {
                        this.wrapper.inputQueue.add(lastLine);
                    }
                 }
+
                 this.buffer.append(lastLine).append("\n");
             }
             try {
