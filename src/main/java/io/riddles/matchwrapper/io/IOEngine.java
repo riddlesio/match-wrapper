@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
+import io.riddles.matchwrapper.MatchWrapper;
+
 /**
  * IOEngine class
  *
@@ -49,7 +51,9 @@ public class IOEngine extends IOWrapper {
      * @return True if write was successful, false otherwise
      */
     public boolean send(String message) {
-        System.out.println(String.format("Engine in: '%s'", message));
+        if (!MatchWrapper.SUPPRESS_ENGINE_IO) {
+            System.out.println(String.format("Engine in: '%s'", message));
+        }
         return write(message);
     }
 
@@ -93,7 +97,9 @@ public class IOEngine extends IOWrapper {
 
         this.response = null;
 
-        System.out.println(String.format("Engine out: '%s'", message));
+        if (!MatchWrapper.SUPPRESS_ENGINE_IO) {
+            System.out.println(String.format("Engine out: '%s'", message));
+        }
 
         return message;
     }
