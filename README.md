@@ -1,6 +1,6 @@
 # Riddles.io Match Wrapper
 
-The match wrapper is used to run matches on Riddles.io. Takes case of starting
+The match wrapper is used to run matches on Riddles.io. It takes care of starting
 up the processes, handles communication between the processes, handles broken/non-responding
 processes and stores the results of the match.
 
