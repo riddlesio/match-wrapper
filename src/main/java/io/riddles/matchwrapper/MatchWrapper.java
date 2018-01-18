@@ -162,6 +162,6 @@ public class MatchWrapper implements Runnable {
             gameWriter.close();
         }
 
-        System.out.println("Finished writing to result.json");
+        System.out.println(String.format("Finished writing to %s", this.resultFilePath));
     }
 }
