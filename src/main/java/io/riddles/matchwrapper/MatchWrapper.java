@@ -150,7 +150,7 @@ public class MatchWrapper implements Runnable {
     }
 
     private void saveGame(JSONObject result) throws IOException {
-        System.out.println("Writing to result.json");
+        System.out.println(String.format("Writing to %s", this.resultFilePath));
 
         FileWriter writer = new FileWriter(this.resultFilePath);
         writer.write(result.toString());
