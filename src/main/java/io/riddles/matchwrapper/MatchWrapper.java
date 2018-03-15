@@ -45,7 +45,7 @@ public class MatchWrapper implements Runnable {
     public static long MAX_TIME_BANK = 10000L; // 10 seconds default
     public static long TIME_PER_MOVE = 500L; // 0,5 seconds default
     public static int MAX_TIMEOUTS = 0; // 0 timeouts default before shutdown
-    public static long MAX_MEMORY = 250000; // over 250MB triggers warning
+    public static long MAX_MEMORY = 200000; // over 200MB triggers warning
     private String resultFilePath;
     private Runnable runner;
 
