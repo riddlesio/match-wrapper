@@ -42,6 +42,7 @@ public class MatchWrapper implements Runnable {
     public static boolean DEBUG = false;
     public static boolean SUPPRESS_ENGINE_IO = false; // when true: engine I/O is not printed
     public static boolean PROPAGATE_BOT_EXIT_CODE = false; // when true: if a bot crashes, wrapper exits with code 1
+    public static long ENGINE_TIMEOUT = 10000L; // 10 seconds default
     public static long MAX_TIME_BANK = 10000L; // 10 seconds default
     public static long TIME_PER_MOVE = 500L; // 0,5 seconds default
     public static int MAX_TIMEOUTS = 0; // 0 timeouts default before shutdown
@@ -100,6 +101,10 @@ public class MatchWrapper implements Runnable {
     private void parseSettings(JSONObject config) {
 
         JSONObject wrapperConfig = config.getJSONObject("wrapper");
+
+        if (wrapperConfig.has("engineTimeout")) {
+            ENGINE_TIMEOUT = wrapperConfig.getLong("engineTimeout");
+        }
 
         if (wrapperConfig.has("timebankMax")) {
             MAX_TIME_BANK = wrapperConfig.getLong("timebankMax");

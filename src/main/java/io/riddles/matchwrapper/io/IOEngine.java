@@ -40,7 +40,7 @@ public class IOEngine extends IOWrapper {
 
     public IOEngine(Process process, JSONObject configuration) {
         super(process);
-        this.timebank = 10000;  // 10 seconds
+        this.timebank = MatchWrapper.ENGINE_TIMEOUT;
         this.configuration = configuration;
         this.inputQueue = new ConcurrentLinkedQueue<>();
     }

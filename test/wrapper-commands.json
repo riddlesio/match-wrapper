@@ -1,5 +1,6 @@
 {
   "wrapper": {
+    "engineTimeout": 2000,
     "timebankMax": 2000,
     "timePerMove": 100,
     "maxTimeouts": 0,
