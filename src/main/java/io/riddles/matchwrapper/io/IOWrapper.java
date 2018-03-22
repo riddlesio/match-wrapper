@@ -41,6 +41,7 @@ public abstract class IOWrapper implements Runnable {
     protected boolean finished;
     protected boolean errored;
     protected long timebank;
+    protected int exitStatus;
     
     public String response;
     public ConcurrentLinkedQueue<String> inputQueue;
@@ -134,7 +135,7 @@ public abstract class IOWrapper implements Runnable {
      */
     public int finish() {
         if (this.finished) {
-            return this.errored ? 1 : 0;
+            return this.exitStatus;
         }
 
         // stop io streams
@@ -147,8 +148,9 @@ public abstract class IOWrapper implements Runnable {
         try { this.process.waitFor(); } catch (InterruptedException ignored) {}
 
         this.finished = true;
+        this.exitStatus = this.errored ? 1 : 0;
 
-        return this.errored ? 1 : 0;
+        return this.exitStatus;
     }
     
     /**

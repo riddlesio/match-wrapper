@@ -152,6 +152,10 @@ public class IOPlayer extends IOWrapper {
      * Shuts down the bot
      */
     public int finish() {
+        if (this.finished) {
+            return this.exitStatus;
+        }
+
         int exitStatus = super.finish();
 
         if (!MatchWrapper.PROPAGATE_BOT_EXIT_CODE) {

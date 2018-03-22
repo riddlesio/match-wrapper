@@ -107,14 +107,18 @@ public class IOEngine extends IOWrapper {
     /**
      * Shuts down the engine
      */
+    @Override
     public int finish() {
-        int exitStatus = super.finish();
+        if (this.finished) {
+            return this.exitStatus;
+        }
+
+        super.finish();
 
         System.out.println("Engine shut down.");
-
         printErrors();
 
-        return exitStatus;
+        return this.exitStatus;
     }
 
     /**
